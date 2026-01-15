@@ -23,6 +23,7 @@ Produce alternative visualizations summarizing.
 Branch length distributions 
 Support value distributions
 
-# Expected outcome: Results should support the visual and structural designs, measuring branches and design accuracy. Evolutionary relatedness based on physiological deviations and support value distributions should justify the decision for a specific human-made taxonomic grouping.
+# Expected outcome: 
+Results should support the visual and structural designs, measuring branches and design accuracy. Evolutionary relatedness based on physiological deviations and support value distributions should justify the decision for a specific human-made taxonomic grouping.
 
 
