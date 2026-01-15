@@ -7,3 +7,7 @@ Team Members:
 Em Scott
 escott60@charlotte.edu
 801453399
+
+Sergey Maslinikov
+smaslini@charlotte.edu
+801454115
