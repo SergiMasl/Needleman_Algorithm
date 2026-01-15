@@ -1,16 +1,16 @@
 # Phylogenetic-Tree-Annotation-and-Visualization
-##Group 7 project
+## Group 7 project
 
-#Team Members:
+# Team Members:
 
-Em Scott
+### Em Scott
 escott60@charlotte.edu
 801453399
 
-Sergey Maslinikov
+### Sergey Maslinikov
 smaslini@charlotte.edu
 801454115
 
-Mehrnoush Fereydouni
+### Mehrnoush Fereydouni
 mfereydo@charlotte.edu
 801311759
