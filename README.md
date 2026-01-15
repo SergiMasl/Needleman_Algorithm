@@ -19,5 +19,3 @@ mfereydo@charlotte.edu
 ### Alyssa Leite 
 aleite@charlotte.edu 
 801495851
-
-## Idea of project:
