@@ -1,5 +1,6 @@
 # Group 7 project: Phylogenetic-Tree-Annotation-and-Visualization
 
+## URL: https://github.com/SergiMasl/Phylogenetic-Tree-Annotation-and-Visualization
 
 ## Team Members:
 
@@ -18,3 +19,5 @@ mfereydo@charlotte.edu
 ### Alyssa Leite 
 aleite@charlotte.edu 
 801495851
+
+## Idea of project:
