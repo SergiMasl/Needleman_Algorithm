@@ -14,3 +14,7 @@ smaslini@charlotte.edu
 ### Mehrnoush Fereydouni
 mfereydo@charlotte.edu
 801311759
+
+Alyssa Leite 
+aleite@charlotte.edu 
+801495851
