@@ -1,7 +1,7 @@
-# Phylogenetic-Tree-Annotation-and-Visualization
-## Group 7 project
+# Group 7 project: Phylogenetic-Tree-Annotation-and-Visualization
 
-# Team Members:
+
+## Team Members:
 
 ### Em Scott
 escott60@charlotte.edu
