@@ -15,6 +15,6 @@ smaslini@charlotte.edu
 mfereydo@charlotte.edu
 801311759
 
-Alyssa Leite 
+### Alyssa Leite 
 aleite@charlotte.edu 
 801495851
