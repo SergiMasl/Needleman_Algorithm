@@ -1,4 +1,4 @@
-# Group 7 project: Phylogenetic-Tree-Annotation-and-Visualization
+# Group 7 project: Needleman_Algorithm
 
 ## URL: https://github.com/SergiMasl/Phylogenetic-Tree-Annotation-and-Visualization
 
