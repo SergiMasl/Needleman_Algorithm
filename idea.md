@@ -1,4 +1,4 @@
-# Group 7 project: Phylogenetic Tree Annotation and Visualization
+# Group 7 project: Needleman Algorithm
 
 ## From Idea File:
 
