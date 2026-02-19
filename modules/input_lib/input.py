@@ -9,4 +9,6 @@ def input():
     -   Open the user input files safely 
     -   Pass onto bigger python project file
     """
-    pass    
+    pass
+
+    #Alyssa will be doing the input function(s)    
