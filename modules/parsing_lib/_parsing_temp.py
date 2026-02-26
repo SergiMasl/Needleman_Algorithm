@@ -1,17 +1,11 @@
-def parsing(x, y, pad=1):
+def parsing_2_seq(x, y, pad=1):
     """
-        Purpose: Puts the two DNA sequences in a table-like array
-        Input: Taking the two DNA sequences from the User Input File output
-        Output: Scoring values for the matrix and rank top three choices 
-       
-        High-level steps: 
-        -    Calculate the scoring values for the matrix
-        -    Score the values properly and be able to tabulate properly
-        -    No data table mismatch or shifts
-        -    Be able to compensate if the sequence lengths are not the same 
-        -    Be capable of performing a traceback (multiple tracebacks if required) to find the most aligned sequences
-        -    Be able to rank the top three choices(?), and have tie-rank capabilities 
+    Print a bordered table with `x` as column headers (top) and `y` as row headers (left).
+    Cells are empty (no body fill).
 
+    - x: iterable of column header values (top).
+    - y: iterable of row header values (left).
+    - pad: spaces padding inside each cell.
     """
     xs = [str(v) for v in x]
     ys = [str(v) for v in y]
@@ -48,8 +42,4 @@ def parsing(x, y, pad=1):
         print(r)
         print(sep)
 
-parsing(['A','B'], ['A','B'])
-
-    
-
-#Sergey will be doing the parsing function(s)
+parsing_2_seq(['A','B'], ['A','B'])
