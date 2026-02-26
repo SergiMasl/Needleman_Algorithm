@@ -1,5 +1,7 @@
 def parsing(file_from_input):
     """
+     -this function will take one array which contain 2 seqs arrays
+
         Purpose: Puts the two DNA sequences in a table-like array
         Input: Taking the two DNA sequences from the User Input File output
         Output: Scoring values for the matrix and rank top three choices 
@@ -20,15 +22,12 @@ def parsing(file_from_input):
 
     ###change to match and mismatch scoring values, and gap penalties, and make sure it can handle those properly in the scoring matrix and traceback functions.
 
-    """
-    !!!!
-    -this function will take one array which contain 2 seqs arrays
-    """
+    
     pass
-    #step 1: ask user asking user for match score, mismatch score, and gap penalty
 
-   
-match_score, mismatch_score, gap_penalty = get_scoring_parameters()
+
+#step 1: ask user asking user for match score, mismatch score, and gap penalty  
+#match_score, mismatch_score, gap_penalty = get_scoring_parameters()
 
 
 
