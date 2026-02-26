@@ -2,23 +2,20 @@
 """
 validation.py
 
+Validate DNA sequences and scoring parameters before running
+the Needleman–Wunsch alignment algorithm.
 
 - Cleans sequences (remove whitespace, convert to uppercase)
 - Ensures sequences contain only A, C, G, T
 - Validates scoring values (match, mismatch, gap)
 """
 
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Set
-
 
 # Allowed DNA characters
-VALID_DNA: Set[str] = {"A", "C", "G", "T"}
+VALID_DNA = {"A", "C", "G", "T"}
 
 
-def normalize_sequence(seq: str) -> str:
+def normalize_sequence(seq):
     """
     Clean a DNA sequence by removing whitespace and converting to uppercase.
     """
@@ -27,7 +24,7 @@ def normalize_sequence(seq: str) -> str:
     return "".join(seq.split()).upper()
 
 
-def validate_dna_sequence(seq: str, name: str = "sequence") -> str:
+def validate_dna_sequence(seq, name="sequence"):
     """
     Validate a DNA sequence (A/C/G/T only).
     Raises an error if the sequence is empty or contains invalid characters.
@@ -49,36 +46,28 @@ def validate_dna_sequence(seq: str, name: str = "sequence") -> str:
     return cleaned
 
 
-def validate_int(value: str, name: str) -> int:
+def validate_int(value, name):
     """
     Validate that a value can be converted to an integer.
     """
     try:
         return int(value)
-    except Exception:
-        raise ValueError(f"{name} must be an integer. entered: {value!r}")
+    except:
+        raise ValueError(f"{name} must be an integer. You entered: {value}")
 
 
-@dataclass(frozen=True)
-class ScoringScheme:
-    """
-    Store scoring parameters for Needleman–Wunsch alignment.
-    """
-    match: int = 1
-    mismatch: int = -1
-    gap: int = -2
-
-
-def validate_scoring(match: int, mismatch: int, gap: int) -> ScoringScheme:
+def validate_scoring(match, mismatch, gap):
     """
     Validate scoring configuration before alignment.
+    Returns (match, mismatch, gap) if valid.
     """
     if match == 0 and mismatch == 0 and gap == 0:
         raise ValueError(
             "Scoring cannot be all zeros; alignment would be meaningless."
         )
 
-    return ScoringScheme(match=match, mismatch=mismatch, gap=gap)
+    return match, mismatch, gap
+
 
 
 # Mehrnoush will be doing the validation function(s)
