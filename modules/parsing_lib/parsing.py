@@ -13,31 +13,22 @@ def parsing(file_from_input):
         -    Be able to rank the top three choices(?), and have tie-rank capabilities 
 
     """
-    sequences = []
-    current_id = None
-    current_seq = []
     
     """next step is use real fasta files to test the parsing function, and make sure it can handle multiple 
     sequences in one file, and that it can handle sequences of different lengths.
     Also need to make sure it can handle sequences with different characters (e.g. N for unknown bases)."""
 
-    with open(file_from_input, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            if line.startswith('>'):
-                if current_id is not None:
-                    sequences.append((current_id, ''.join(current_seq)))
-                current_id = line[1:]
-                current_seq = []
-            else:
-                current_seq.append(line.upper())
+    ###change to match and mismatch scoring values, and gap penalties, and make sure it can handle those properly in the scoring matrix and traceback functions.
 
-    if current_id is not None:
-        sequences.append((current_id, ''.join(current_seq)))
+    """
+    !!!!
+    -this function will take one array which contain 2 seqs arrays
+    """
+    pass
+    #step 1: ask user asking user for match score, mismatch score, and gap penalty
 
-    return sequences
+   
+match_score, mismatch_score, gap_penalty = get_scoring_parameters()
 
 
 
