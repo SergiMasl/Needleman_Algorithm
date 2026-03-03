@@ -4,6 +4,7 @@ def get_scoring_parameters():
         Input: User input for match score, mismatch score, and gap penalty
         Output: Match score, mismatch score, and gap penalty as integers
     """
+    
     print("default values for match score, mismatch score, and gap penalty are +2, -1, and -2 respectively.")
     print("You can choose to use the default values or enter your own values.")
     user_parameters = input("Do you want to use the default values? (yes/no): ")
