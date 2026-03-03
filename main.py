@@ -5,6 +5,7 @@ def main():
     High-level steps:
     - Call user_input module
     """
+    print("Welcome to the program!")
     pass
 
 if __name__ == "__main__":
