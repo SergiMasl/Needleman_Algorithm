@@ -29,3 +29,14 @@ aleite@charlotte.edu
 This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
 
 The GPL-3.0 is a strong copyleft license that ensures this gene comparison software and any modified or redistributed versions remain open source. We chose this license to promote transparency, reproducibility, and collaboration in bioinformatics research, while preventing proprietary use of the code.
+
+## Environment Setup
+
+1. Install Anaconda
+2. Clone the repository
+3. Create environment:
+   conda env create -f environment.yml
+4. Activate environment:
+   conda activate needleman_env
+5. Run program:
+   python main.py
