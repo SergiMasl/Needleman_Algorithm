@@ -1,2 +1,2 @@
 python=3.11
-#here we have to add what liberies we use
+NumPy
