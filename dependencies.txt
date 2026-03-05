@@ -1,2 +1,6 @@
 python=3.11
 NumPy
+BioPython
+Blas
+Pandas
+Matplotlib
