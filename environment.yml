@@ -1,4 +1,4 @@
-name: needleman_env
+name: Needleman_Algorithm
 channels:
   - defaults
   - https://repo.anaconda.com/pkgs/main
@@ -82,4 +82,4 @@ dependencies:
   - zstd=1.5.7=h817c040_0
   - pip:
       - biopython==1.86
-prefix: /opt/anaconda3/envs/needleman_env
+prefix: /opt/anaconda3/envs/Needleman_Algorithm

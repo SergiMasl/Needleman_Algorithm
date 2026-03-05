@@ -37,6 +37,6 @@ The GPL-3.0 is a strong copyleft license that ensures this gene comparison softw
 3. Create environment:
    conda env create -f environment.yml
 4. Activate environment:
-   conda activate needleman_env
+   conda activate Needleman_Algorithm
 5. Run program:
    python main.py
