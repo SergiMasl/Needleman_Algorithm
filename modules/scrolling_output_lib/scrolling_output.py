@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
 #escott60@charlotte.edu
-#Em Scott
-
-# Each student must choose and code at least one function for their final project today. 
-# Update the GitHub/GitLab project. Uploaded the project here as a single compressed file.
+#Em Scott (Updated 3/19/2026)
 
 import numpy as np #give abbreviation to numpy
+import sys
+#from parsing_lib.parsing import (the parsing return)
+#import 
 
 class GridBuild():
 
-    def matrix_init(self, seq_a: str, seq_b: str) -> tuple: #set up the matrix for printing
+    def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
         """
         Purpose: Initialize a matrix with the sequences, getting it ready for output
 
@@ -18,20 +18,48 @@ class GridBuild():
         
         Returns: Return a tuple containing initialized rows and columns
         """
-        top_row = len(seq_a) + 1
-        left_col = len(seq_b) + 1
+        rows = len(seq_a) + 1
+        cols = len(seq_b) + 1
 
-        matrix = np.zeros((top_row, left_col), dtype = int) #create data initialization with numpy zeros 
+        matrix = np.zeros((rows, cols), dtype = int) #create data initialization with numpy zeros 
+
+        for i in range(1, rows):
+            matrix[i][0] = i * gap
+
+        for i in range(1, cols):
+            matrix[j][0] = j * gap
+
+        #export to main to show the step of the initialization? 
+
         return matrix
 
-    #def matrix_construct(seq_a: str, seq_b: str, match_score: int, mismatch_score: int, gap_penalties: int): #fill in the matrix with the returned parsing.py data
+
+    def matrix_construct(
+        self, 
+        matrix: np.ndarray,
+        seq1_array: np.ndarray, 
+        seq2_array: np.ndarray,
+        match: int, #get the defaults from CLI, implement getting user-specified parameters later
+        mismatch: int, 
+        gap: int
+    ) -> np.ndarray:
+
+        rows, cols = matrix.shape
+
+        for i in range(1, rows): 
+            for j in range(1, cols):
+                if seq_a[i-1] == seq_b[j-1]:
+                    diagonal = matrix[i-1][j-1] + match
+                else:
+                    diagonal = matrix[i-1][j-1] + mismatch
+
 
     #def view_traceback():
 
     #def matrix_print(): #print the formatted output, last function to code 
 
 call_grid = GridBuild()
-matrix = call_grid.matrix_init("AGATCATCTATCTA", "AGATCATCTGTACATT")
+matrix = call_grid.matrix_init("AGATCATCTATCTA", "AGATCATCTGTACATT") #sample
 print(matrix)
 
 #Pseudocode: 
