@@ -22,6 +22,6 @@ def get_scoring_parameters():
     
     return match_score, mismatch_score, gap_penalty
 
-#checking:
-tets_1 = get_scoring_parameters()
-print(tets_1)
+if __name__ == "__main__":
+    tets_1 = get_scoring_parameters()
+    print(tets_1)

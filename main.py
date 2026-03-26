@@ -4,7 +4,6 @@
 
 import sys
 import argparse 
-from 
 #Updated (3/19/2026)
 
 #make an argument parser to define some CLI options, such as the minimum and
@@ -17,15 +16,15 @@ from
 #all team members and making sure all inputs are passed correctly
 class CreateAlignment: 
 
-	def __init__(
-		self, 
-		input_file: str= None,
-		sequence1: str= None, 
-		sequence2: str= None,
-		match:int = 2, 
-		mismatch:int = -1, 
-		gap:int = -2
-		) -> None 
+	# def __init__(
+	# 	self, 
+	# 	input_file: str= None,
+	# 	sequence1: str= None, 
+	# 	sequence2: str= None,
+	# 	match:int = 2, 
+	# 	mismatch:int = -1, 
+	# 	gap:int = -2
+	# 	) -> None 
 
 	def create_parser() -> argparse.ArgumentParser: 
 
@@ -90,7 +89,8 @@ class CreateAlignment:
 			)
 
 
-	def main() -> None 
+	def main() -> None:
+		pass
 
 
 

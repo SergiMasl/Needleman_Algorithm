@@ -1,7 +1,7 @@
 import numpy as np
 from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
 
-def parsing(file_from_input):
+def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=None):
     """
      -this function will take one array which contain 2 seqs arrays
      - step 1: ask user asking user for match score, mismatch score, and gap penalty
@@ -56,8 +56,9 @@ def parsing(file_from_input):
         -----------------------------------------------------------
     """
 
-    # step 1: ask user for match score, mismatch score, and gap penalty
-    match_score, mismatch_score, gap_penalty = get_scoring_parameters()
+    # step 1: use provided scoring params, or ask user if not supplied
+    if match_score is None or mismatch_score is None or gap_penalty is None:
+        match_score, mismatch_score, gap_penalty = get_scoring_parameters()
 
     # step 2: build the Needleman-Wunsch scoring matrix
     seq_a = file_from_input.seq_a  # columns
