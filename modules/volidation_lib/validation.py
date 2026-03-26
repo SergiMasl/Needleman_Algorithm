@@ -51,12 +51,11 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
             f"{name} is empty. Please enter a DNA sequence using only A, C, G, and T."
         )
 
-    # Check for invalid characters
     invalid_chars = sorted(set(cleaned) - VALID_DNA)
     if invalid_chars:
         raise ValueError(
             f"{name} contains invalid character(s): {', '.join(invalid_chars)}. "
-            "Allowed characters: A, C, G, T."
+            "Only alphabetic characters are allowed."
         )
 
     return cleaned
@@ -78,11 +77,21 @@ def validate_int(value, name: str) -> int:
     """
     try:
         return int(value)
-    except (TypeError, ValueError):
+    except:
+        raise ValueError(f"{name} must be an integer. You entered: {value}")
+
+
+def validate_scoring(match, mismatch, gap):
+    """
+    Validate scoring configuration before alignment.
+    Returns (match, mismatch, gap) if valid.
+    """
+    if match == 0 and mismatch == 0 and gap == 0:
         raise ValueError(
-            f"{name} must be an integer. You entered: {value}. "
-            "Example valid values: 2, -1, -2."
+            "Scoring cannot be all zeros; alignment would be meaningless."
         )
+
+    return match, mismatch, gap
 
 
 # Mehrnoush will be doing the validation function(s)

@@ -33,10 +33,10 @@ The GPL-3.0 is a strong copyleft license that ensures this gene comparison softw
 ## Environment Setup
 
 1. Install Anaconda
-2. Clone the repository
+2. Clone the repository using git clone 
 3. Create environment:
    conda env create -f environment.yml
 4. Activate environment:
-   conda activate Needleman_Algorithm
+   conda activate needleman_algorithm
 5. Run program:
    python main.py

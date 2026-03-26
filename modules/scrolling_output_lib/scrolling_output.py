@@ -3,14 +3,20 @@
 #escott60@charlotte.edu
 #Em Scott
 
-# Each student must choose and code at least one function for their final project today. 
-# Update the GitHub/GitLab project. Uploaded the project here as a single compressed file.
-
+#make a pdf output
 import numpy as np #give abbreviation to numpy
+import sys
+from typing import List, Tuple
+
+"""
+3/26/2026 Update: The script has been tested and works well. However, it can be
+further optimized in terms of memory preallocation and the addition of docstrings.
+"""
+#from parsing_lib.parsing import (the parsing return)
 
 class GridBuild():
 
-    def matrix_init(self, seq_a: str, seq_b: str) -> tuple: #set up the matrix for printing
+    def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
         """
         Purpose: Initialize a matrix with the sequences, getting it ready for output
 
@@ -18,21 +24,142 @@ class GridBuild():
         
         Returns: Return a tuple containing initialized rows and columns
         """
-        top_row = len(seq_a) + 1
-        left_col = len(seq_b) + 1
+        rows = len(seq_a) + 1
+        cols = len(seq_b) + 1
+        matrix = np.zeros((rows, cols), dtype = int) #create data initialization with numpy zeros 
 
-        matrix = np.zeros((top_row, left_col), dtype = int) #create data initialization with numpy zeros 
+        for i in range(1, rows): #"i" will be assigned to rows
+            matrix[i][0] = i * gap
+        for j in range(1, cols): #"j" will be assigned to columns
+            matrix[0][j] = j * gap
+
+        #export to main to show the step of the initialization? 
         return matrix
 
-    #def matrix_construct(seq_a: str, seq_b: str, match_score: int, mismatch_score: int, gap_penalties: int): #fill in the matrix with the returned parsing.py data
+    def matrix_construct(
+        self, 
+        matrix: np.ndarray,
+        seq_a: str, 
+        seq_b: str,
+        match: int, #get the defaults from CLI, implement getting user-specified parameters later 
+        #from parsing.py?
+        mismatch: int, 
+        gap: int
+    ) -> np.ndarray:
 
-    #def view_traceback():
+        #Get the diagonal score
+        rows, cols = matrix.shape
+        for i in range(1, rows): 
+            for j in range(1, cols):
+                if seq_b[i-1] == seq_a[j-1]:
+                    score_di = matrix[i-1, j-1] + match
+                else:
+                    score_di = matrix[i-1, j-1] + mismatch
+        #Set gap scoring parameters:
+                score_up = matrix[i-1, j] + gap 
+                score_left = matrix[i, j-1] + gap 
 
-    #def matrix_print(): #print the formatted output, last function to code 
+                best_score = max(score_di, score_up, score_left)
+                matrix[i, j] = best_score
+        return matrix 
 
-call_grid = GridBuild()
-matrix = call_grid.matrix_init("AGATCATCTATCTA", "AGATCATCTGTACATT")
-print(matrix)
+    def view_traceback(
+        self, 
+        matrix: np.ndarray,
+        seq_a: str, 
+        seq_b: str,
+        match: int,
+        mismatch: int,
+        gap: int
+    ) -> np.ndarray:
+
+        i, j = matrix.shape[0] - 1, matrix.shape[1] - 1 
+        #this made me mad because it gave me so many errors
+        seq_align_a = []
+        seq_align_b = []
+
+        while i > 0 or j > 0:
+            if i == 0:
+                seq_align_a.append("-")
+                seq_align_b.append(seq_b[j-1])
+                j -= 1
+                continue
+            if j == 0:
+                seq_align_a.append(seq_a[i-1])
+                seq_align_b.append("-")
+                i -= 1
+                continue
+
+            current = matrix[i, j]
+            diag = matrix[i-1, j-1]
+            up = matrix[i-1, j]
+            left = matrix[i, j-1]
+
+            if seq_a[i-1] == seq_b[j-1]:
+                score_di = diag + match
+            else:
+                score_di = diag + mismatch
+
+            score_up = up + gap
+            score_left = left + gap 
+
+            if current == score_di:
+                seq_align_a.append(seq_a[i - 1])
+                seq_align_b.append(seq_b[j - 1])
+                i -= 1
+                j -= 1
+            elif current == score_up:
+                seq_align_a.append(seq_a[i - 1])
+                seq_align_b.append("-")
+                i -= 1
+            else: # go left:
+                seq_align_a.append("-")
+                seq_align_b.append(seq_b[j - 1])
+                j -= 1
+
+        seq_align_a.reverse()
+        seq_align_b.reverse()
+
+        return(seq_align_a, seq_align_b)
+
+#Make sure to get the consensus sequence (best aligning) amongst the two (N as placeholder)
+    def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
+        consensus_seq = []
+        for a, b in zip(seq_align_a, seq_align_b):
+            if a == b:
+                consensus_seq.append(a)
+            elif a == "-":
+                consensus_seq.append(b)
+            elif b == "-":
+                consensus_seq.append(a)
+            else:
+                consensus_seq.append("N") #one or the other
+        return consensus_seq 
+
+# TESTING/TROUBLESHOOTING CLASS CALLING AND INPUT PROCESSING THROUGH FUNCTIONS
+
+if __name__ == "__main__":
+    call_grid = GridBuild()
+    matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
+    print(matrix)
+    matrix = call_grid.matrix_construct(matrix, "AGATCATCTATCTA", "AGATCATCTGTACATT", 2, -1, -2) #sample
+    print(matrix)
+
+    align_a, align_b = call_grid.view_traceback(
+        matrix,
+        "AGATCATCTATCTA",
+        "AGATCATCTGTACATT",
+        2, -1, -2
+    )
+
+    print("Aligned A:", "".join(align_a))
+    print("Aligned B:", "".join(align_b))
+
+    optimal_seq = call_grid.best_sequence(
+        "AGATCATCTATCTA",
+        "AGATCATCTGTACATT")
+    print(optimal_seq)
+
 
 #Pseudocode: 
 #Consider putting everything into a class?
