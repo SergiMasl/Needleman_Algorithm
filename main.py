@@ -3,7 +3,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import argparse 
+import argparse
+from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
+from modules.parsing_lib.parsing import parsing
+from modules.report_lib.report import report
 #Updated (3/19/2026)
 
 #make an argument parser to define some CLI options, such as the minimum and
@@ -26,7 +29,8 @@ class CreateAlignment:
 	# 	gap:int = -2
 	# 	) -> None 
 
-	def create_parser() -> argparse.ArgumentParser: 
+	@staticmethod
+	def create_parser() -> argparse.ArgumentParser:
 
 		#Setting the scoring scheme to a default (modify as a last improvement):
 		#Match = +2
@@ -80,19 +84,24 @@ class CreateAlignment:
 			help="Input Fasta File", 
 			)
 
-		parser.add_argument( 
-			"-o", 
-			"--outputfasta", 
+		parser.add_argument(
+			"-o",
+			"--outputfasta",
 			type=str,
 			default="nwalignment.fasta",
-			help="Output Fasta File", 
+			help="Output Fasta File",
 			)
 
+		return parser
 
+
+	@staticmethod
 	def main() -> None:
-		pass
+		match_score, mismatch_score, gap_penalty = get_scoring_parameters()
+		matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty = parsing(file_from_input, match_score, mismatch_score, gap_penalty)
+		report(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
 
 
 
 if __name__ == "__main__":
-	main()
+	CreateAlignment.main()

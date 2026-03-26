@@ -1,5 +1,6 @@
 import numpy as np
 from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
+from modules.scrolling_output_lib.scrolling_output import GridBuild
 
 def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=None):
     """
@@ -85,6 +86,9 @@ def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=
             up   = matrix[i - 1][j] + gap_penalty
             left = matrix[i][j - 1] + gap_penalty
             matrix[i][j] = max(diagonal, up, left)
+
+    grid = GridBuild()
+    grid.matrix_construct(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
 
     return matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty
 
