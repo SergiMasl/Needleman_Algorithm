@@ -62,7 +62,7 @@ class GridBuild():
     #def matrix_print(): #print the formatted output, last function to code 
 
 call_grid = GridBuild()
-matrix = call_grid.matrix_init("AGATCATCTATCTA", "AGATCATCTGTACATT") #sample
+matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
 print(matrix)
 
 #Pseudocode: 
