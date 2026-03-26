@@ -49,11 +49,11 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
             f"{name} is empty. Please enter a DNA sequence using only A, C, G, and T."
         )
 
-    invalid_chars = sorted(set(cleaned) - VALID_DNA)
+    invalid_chars = sorted(c for c in set(cleaned) if not c.isalpha())
     if invalid_chars:
         raise ValueError(
             f"{name} contains invalid character(s): {', '.join(invalid_chars)}. "
-            "Allowed characters: A, C, G, T."
+            "Only alphabetic characters are allowed."
         )
 
     return cleaned

@@ -51,10 +51,10 @@ class GridBuild():
         rows, cols = matrix.shape
         for i in range(1, rows): 
             for j in range(1, cols):
-                if seq_a[i-1] == seq_b[j-1]: #a -> i, b -> j
+                if seq_b[i-1] == seq_a[j-1]:
                     score_di = matrix[i-1, j-1] + match
                 else:
-                    score_di = matrix[i-1, j-1] + mismatch 
+                    score_di = matrix[i-1, j-1] + mismatch
         #Set gap scoring parameters:
                 score_up = matrix[i-1, j] + gap 
                 score_left = matrix[i, j-1] + gap 
@@ -138,26 +138,27 @@ class GridBuild():
 
 # TESTING/TROUBLESHOOTING CLASS CALLING AND INPUT PROCESSING THROUGH FUNCTIONS
 
-call_grid = GridBuild()
-matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
-print(matrix)
-matrix = call_grid.matrix_construct(matrix, "AGATCATCTATCTA", "AGATCATCTGTACATT", 2, -1, -2) #sample
-print(matrix)
+if __name__ == "__main__":
+    call_grid = GridBuild()
+    matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
+    print(matrix)
+    matrix = call_grid.matrix_construct(matrix, "AGATCATCTATCTA", "AGATCATCTGTACATT", 2, -1, -2) #sample
+    print(matrix)
 
-align_a, align_b = call_grid.view_traceback(
-    matrix,
-    "AGATCATCTATCTA",
-    "AGATCATCTGTACATT",
-    2, -1, -2
-)
+    align_a, align_b = call_grid.view_traceback(
+        matrix,
+        "AGATCATCTATCTA",
+        "AGATCATCTGTACATT",
+        2, -1, -2
+    )
 
-print("Aligned A:", "".join(align_a))
-print("Aligned B:", "".join(align_b))
+    print("Aligned A:", "".join(align_a))
+    print("Aligned B:", "".join(align_b))
 
-optimal_seq = call_grid.best_sequence(
-    "AGATCATCTATCTA", 
-    "AGATCATCTGTACATT")
-print(optimal_seq)
+    optimal_seq = call_grid.best_sequence(
+        "AGATCATCTATCTA",
+        "AGATCATCTGTACATT")
+    print(optimal_seq)
 
 
 #Pseudocode: 

@@ -4,6 +4,7 @@
 
 import sys
 import argparse
+from modules.input_lib.input import input_sequences
 from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
 from modules.parsing_lib.parsing import parsing
 from modules.report_lib.report import report
@@ -19,24 +20,9 @@ from modules.report_lib.report import report
 #all team members and making sure all inputs are passed correctly
 class CreateAlignment: 
 
-	# def __init__(
-	# 	self, 
-	# 	input_file: str= None,
-	# 	sequence1: str= None, 
-	# 	sequence2: str= None,
-	# 	match:int = 2, 
-	# 	mismatch:int = -1, 
-	# 	gap:int = -2
-	# 	) -> None 
-
 	@staticmethod
 	def create_parser() -> argparse.ArgumentParser:
-
-		#Setting the scoring scheme to a default (modify as a last improvement):
-		#Match = +2
-		#Mismatch = -1
-		#Gap Penalty = -2
-
+		
 		parser = argparse.ArgumentParser(description="Needleman-Wunsch CLI") 
 		parser.add_argument( 
 			"-i", 
@@ -97,6 +83,9 @@ class CreateAlignment:
 
 	@staticmethod
 	def main() -> None:
+		parser = CreateAlignment.create_parser()
+		args = parser.parse_args()
+		file_from_input = input_sequences(args)
 		match_score, mismatch_score, gap_penalty = get_scoring_parameters()
 		matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty = parsing(file_from_input, match_score, mismatch_score, gap_penalty)
 		report(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
