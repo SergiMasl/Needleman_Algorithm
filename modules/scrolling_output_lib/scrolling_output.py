@@ -54,16 +54,111 @@ class GridBuild():
                 if seq_a[i-1] == seq_b[j-1]: #a -> i, b -> j
                     score_di = matrix[i-1, j-1] + match
                 else:
-                    diagonal = matrix[i-1][j-1] + mismatch
+                    score_di = matrix[i-1, j-1] + mismatch 
+        #Set gap scoring parameters:
+                score_up = matrix[i-1, j] + gap 
+                score_left = matrix[i, j-1] + gap 
 
+                best_score = max(score_di, score_up, score_left)
+                matrix[i, j] = best_score
+        return matrix 
 
-    #def view_traceback():
+    def view_traceback(
+        self, 
+        matrix: np.ndarray,
+        seq_a: str, 
+        seq_b: str,
+        match: int,
+        mismatch: int,
+        gap: int
+    ) -> np.ndarray:
 
-    #def matrix_print(): #print the formatted output, last function to code 
+        i, j = matrix.shape[0] - 1, matrix.shape[1] - 1 
+        #this made me mad because it gave me so many errors
+        seq_align_a = []
+        seq_align_b = []
+
+        while i > 0 or j > 0:
+            if i == 0:
+                seq_align_a.append("-")
+                seq_align_b.append(seq_b[j-1])
+                j -= 1
+                continue
+            if j == 0:
+                seq_align_a.append(seq_a[i-1])
+                seq_align_b.append("-")
+                i -= 1
+                continue
+
+            current = matrix[i, j]
+            diag = matrix[i-1, j-1]
+            up = matrix[i-1, j]
+            left = matrix[i, j-1]
+
+            if seq_a[i-1] == seq_b[j-1]:
+                score_di = diag + match
+            else:
+                score_di = diag + mismatch
+
+            score_up = up + gap
+            score_left = left + gap 
+
+            if current == score_di:
+                seq_align_a.append(seq_a[i - 1])
+                seq_align_b.append(seq_b[j - 1])
+                i -= 1
+                j -= 1
+            elif current == score_up:
+                seq_align_a.append(seq_a[i - 1])
+                seq_align_b.append("-")
+                i -= 1
+            else: # go left:
+                seq_align_a.append("-")
+                seq_align_b.append(seq_b[j - 1])
+                j -= 1
+
+        seq_align_a.reverse()
+        seq_align_b.reverse()
+
+        return(seq_align_a, seq_align_b)
+
+#Make sure to get the consensus sequence (best aligning) amongst the two (N as placeholder)
+    def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
+        consensus_seq = []
+        for a, b in zip(seq_align_a, seq_align_b):
+            if a == b:
+                consensus_seq.append(a)
+            elif a == "-":
+                consensus_seq.append(b)
+            elif b == "-":
+                consensus_seq.append(a)
+            else:
+                consensus_seq.append("N") #one or the other
+        return consensus_seq 
+
+# TESTING/TROUBLESHOOTING CLASS CALLING AND INPUT PROCESSING THROUGH FUNCTIONS
 
 call_grid = GridBuild()
-matrix = call_grid.matrix_init("AGATCATCTATCTA", "AGATCATCTGTACATT") #sample
+matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
 print(matrix)
+matrix = call_grid.matrix_construct(matrix, "AGATCATCTATCTA", "AGATCATCTGTACATT", 2, -1, -2) #sample
+print(matrix)
+
+align_a, align_b = call_grid.view_traceback(
+    matrix,
+    "AGATCATCTATCTA",
+    "AGATCATCTGTACATT",
+    2, -1, -2
+)
+
+print("Aligned A:", "".join(align_a))
+print("Aligned B:", "".join(align_b))
+
+optimal_seq = call_grid.best_sequence(
+    "AGATCATCTATCTA", 
+    "AGATCATCTGTACATT")
+print(optimal_seq)
+
 
 #Pseudocode: 
 #Consider putting everything into a class?
