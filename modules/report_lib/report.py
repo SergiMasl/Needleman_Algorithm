@@ -3,11 +3,17 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from pathlib import Path
+from datetime import datetime
+
+
+def default_report_name() -> str:
+    return datetime.now().strftime("%Y-%m-%d_%H-%M-%S.pdf")
 
 
 def report(matrix: np.ndarray, seq_a: str, seq_b: str,
            match: int, mismatch: int, gap: int,
-           output_path: str = "nw_report.pdf") -> str:
+           output_path: str = None) -> str:
     """
     Purpose: Generate a PDF report of the Needleman-Wunsch scoring matrix.
 
@@ -22,6 +28,11 @@ def report(matrix: np.ndarray, seq_a: str, seq_b: str,
 
     Returns: output_path
     """
+    if output_path is None:
+        reports_dir = Path(__file__).parents[2] / "__Reports"
+        reports_dir.mkdir(exist_ok=True)
+        output_path = str(reports_dir / default_report_name())
+
     col_labels = [" "] + list(seq_a)
     row_labels = [" "] + list(seq_b)
     cell_text = [[str(matrix[i][j]) for j in range(matrix.shape[1])]
