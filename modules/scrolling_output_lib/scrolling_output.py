@@ -47,21 +47,8 @@ class GridBuild():
         gap: int
     ) -> np.ndarray:
 
-        #Get the diagonal score
-        rows, cols = matrix.shape
-        for i in range(1, rows): 
-            for j in range(1, cols):
-                if seq_b[i-1] == seq_a[j-1]:
-                    score_di = matrix[i-1, j-1] + match
-                else:
-                    score_di = matrix[i-1, j-1] + mismatch
-        #Set gap scoring parameters:
-                score_up = matrix[i-1, j] + gap 
-                score_left = matrix[i, j-1] + gap 
-
-                best_score = max(score_di, score_up, score_left)
-                matrix[i, j] = best_score
-        return matrix 
+        # matrix is already filled by parsing.py — no work needed here
+        return matrix
 
     def view_traceback(
         self, 

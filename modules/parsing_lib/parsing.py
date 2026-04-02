@@ -70,22 +70,22 @@ def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=
 
     matrix = np.zeros((rows, cols), dtype=int)
 
-    # initialize first column and first row with cumulative gap penalties
-    for i in range(1, rows):
-        matrix[i][0] = i * gap_penalty
-    for j in range(1, cols):
-        matrix[0][j] = j * gap_penalty
+    # initialize borders with numpy slicing instead of loops
+    matrix[1:, 0] = np.arange(1, rows) * gap_penalty
+    matrix[0, 1:] = np.arange(1, cols) * gap_penalty
 
-    # fill the rest of the matrix using NW recurrence
+    # precompute match/mismatch scores for every (i,j) pair at once
+    seq_b_arr = np.frombuffer(seq_b.encode(), dtype=np.uint8)
+    seq_a_arr = np.frombuffer(seq_a.encode(), dtype=np.uint8)
+    diag_scores = np.where(seq_b_arr[:, None] == seq_a_arr[None, :], match_score, mismatch_score)
+
+    # fill matrix — single pass, no character comparison inside the loop
     for i in range(1, rows):
         for j in range(1, cols):
-            if seq_b[i - 1] == seq_a[j - 1]:
-                diagonal = matrix[i - 1][j - 1] + match_score
-            else:
-                diagonal = matrix[i - 1][j - 1] + mismatch_score
-            up   = matrix[i - 1][j] + gap_penalty
-            left = matrix[i][j - 1] + gap_penalty
-            matrix[i][j] = max(diagonal, up, left)
+            diagonal = matrix[i - 1, j - 1] + diag_scores[i - 1, j - 1]
+            up       = matrix[i - 1, j] + gap_penalty
+            left     = matrix[i, j - 1] + gap_penalty
+            matrix[i, j] = max(diagonal, up, left)
 
     grid = GridBuild()
     grid.matrix_construct(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
