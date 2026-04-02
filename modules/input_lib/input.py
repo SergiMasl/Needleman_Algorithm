@@ -95,15 +95,19 @@ def input_sequences(args):
 		choice = input("Invalid input. Please enter 'fasta' or 'manual': ")
 
 	if choice.lower() == "fasta":
-		file_path = input(f"Enter FASTA file path (default: {args.inputfasta}): ").strip()
-		if not file_path:
-			file_path = args.inputfasta
-		parsed = parse_fasta_file(file_path)
-		if parsed is False:
+		file_path_a = input("Enter full path to first FASTA file: ").strip()
+		parsed_a = parse_fasta_file(file_path_a)
+		if parsed_a is False:
 			sys.exit(1)
-		label_a, seq_a = parsed
-		raw_b = input("Enter second DNA sequence: ")
-		result = build_sequence_input(seq_a, raw_b, label_a, "seq2")
+		label_a, seq_a = parsed_a
+
+		file_path_b = input("Enter full path to second FASTA file: ").strip()
+		parsed_b = parse_fasta_file(file_path_b)
+		if parsed_b is False:
+			sys.exit(1)
+		label_b, seq_b = parsed_b
+
+		result = build_sequence_input(seq_a, seq_b, label_a, label_b)
 	else:
 		raw_a = input("Enter first DNA sequence: ")
 		raw_b = input("Enter second DNA sequence: ")
