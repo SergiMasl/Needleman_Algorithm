@@ -1,4 +1,7 @@
-from validation import validate_dna_sequence, validate_int
+# Run from project root with:
+# python -m modules.validation_lib.test_validation
+
+from modules.validation_lib.validation import validate_dna_sequence, validate_int
 
 print("---- DNA sequence tests ----")
 
