@@ -7,6 +7,8 @@
 import numpy as np #give abbreviation to numpy
 import sys
 from typing import List, Tuple
+from collections import deque
+#import numba
 
 """
 3/26/2026 Update: The script has been tested and works well. However, it can be
@@ -24,14 +26,8 @@ class GridBuild():
         
         Returns: Return a tuple containing initialized rows and columns
         """
-        rows = len(seq_a) + 1
-        cols = len(seq_b) + 1
-        matrix = np.zeros((rows, cols), dtype = int) #create data initialization with numpy zeros 
-
-        for i in range(1, rows): #"i" will be assigned to rows
-            matrix[i][0] = i * gap
-        for j in range(1, cols): #"j" will be assigned to columns
-            matrix[0][j] = j * gap
+        matrix[:, 0] = np.arange(rows) * gap
+        matrix[0, :] = np.arange(cols) * gap
 
         #export to main to show the step of the initialization? 
         return matrix
@@ -50,7 +46,8 @@ class GridBuild():
         # matrix is already filled by parsing.py — no work needed here
         return matrix
 
-    def view_traceback(
+
+   def view_traceback(
         self, 
         matrix: np.ndarray,
         seq_a: str, 
@@ -58,22 +55,23 @@ class GridBuild():
         match: int,
         mismatch: int,
         gap: int
-    ) -> np.ndarray:
+    ) -> Tuple[List, List]:
 
         i, j = matrix.shape[0] - 1, matrix.shape[1] - 1 
         #this made me mad because it gave me so many errors
-        seq_align_a = []
-        seq_align_b = []
+        seq_align_a = deque()
+        seq_align_b = deque()
 
         while i > 0 or j > 0:
             if i == 0:
-                seq_align_a.append("-")
-                seq_align_b.append(seq_b[j-1])
+                seq_align_a.appendleft("-")
+                seq_align_b.appendleft(seq_b[j-1])
                 j -= 1
                 continue
+
             if j == 0:
-                seq_align_a.append(seq_a[i-1])
-                seq_align_b.append("-")
+                seq_align_a.appendleft(seq_a[i-1])
+                seq_align_b.appendleft("-")
                 i -= 1
                 continue
 
@@ -82,32 +80,27 @@ class GridBuild():
             up = matrix[i-1, j]
             left = matrix[i, j-1]
 
-            if seq_a[i-1] == seq_b[j-1]:
-                score_di = diag + match
-            else:
-                score_di = diag + mismatch
-
+            score_di = diag + (match if seq_a[i-1] == seq_b[j-1] else mismatch)
             score_up = up + gap
-            score_left = left + gap 
-
+            score_left = left + gap
+        
             if current == score_di:
-                seq_align_a.append(seq_a[i - 1])
-                seq_align_b.append(seq_b[j - 1])
+                seq_align_a.appendleft(seq_a[i - 1])
+                seq_align_b.appendleft(seq_b[j - 1])
                 i -= 1
                 j -= 1
             elif current == score_up:
-                seq_align_a.append(seq_a[i - 1])
-                seq_align_b.append("-")
+                seq_align_a.appendleft(seq_a[i - 1])
+                seq_align_b.appendleft("-")
                 i -= 1
             else: # go left:
-                seq_align_a.append("-")
-                seq_align_b.append(seq_b[j - 1])
+                seq_align_a.appendleft("-")
+                seq_align_b.appendleft(seq_b[j - 1])
                 j -= 1
 
-        seq_align_a.reverse()
-        seq_align_b.reverse()
+                #use appendleft() instead of append() + reverse() for optimization
 
-        return(seq_align_a, seq_align_b)
+        return seq_align_a, seq_align_b 
 
 #Make sure to get the consensus sequence (best aligning) amongst the two (N as placeholder)
     def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
