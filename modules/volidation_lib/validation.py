@@ -9,6 +9,13 @@ Features:
 - Ensures sequences contain only A, C, G, T
 - Validates integer inputs when needed
 """
+# Updated by: Mehrnoush Fereydouni: April 9, 2026
+# Changes:
+# - Replaced bare except with 'except Exception'
+# - Added type hints to validate_int and validate_scoring
+# - Improved DNA validation error message
+# - Expanded validate_scoring docstring for consistency
+
 
 # Allowed DNA characters
 VALID_DNA = {"A", "C", "G", "T"}
@@ -55,13 +62,13 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
     if invalid_chars:
         raise ValueError(
             f"{name} contains invalid character(s): {', '.join(invalid_chars)}. "
-            "Only alphabetic characters are allowed."
+            "Only A, C, G, and T are allowed."
         )
 
     return cleaned
 
 
-def validate_int(value, name: str) -> int:
+def validate_int(value: object, name: str) -> int:
     """
     Validate that a value can be converted to an integer.
 
@@ -77,14 +84,24 @@ def validate_int(value, name: str) -> int:
     """
     try:
         return int(value)
-    except:
+    except Exception:
         raise ValueError(f"{name} must be an integer. You entered: {value}")
 
 
-def validate_scoring(match, mismatch, gap):
+def validate_scoring(match: int, mismatch: int, gap: int) -> tuple[int, int, int]:
     """
     Validate scoring configuration before alignment.
-    Returns (match, mismatch, gap) if valid.
+
+    Args:
+        match: Match score.
+        mismatch: Mismatch score.
+        gap: Gap penalty.
+
+    Returns:
+        Tuple of validated scoring values (match, mismatch, gap).
+
+    Raises:
+        ValueError: If all scoring values are zero.
     """
     if match == 0 and mismatch == 0 and gap == 0:
         raise ValueError(
