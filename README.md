@@ -85,12 +85,12 @@ The Needleman-Wunsch Algorithm Program has a few dependencies that must be insta
 
 ## Main Program
 
-# python=3.11
+-python=3.11
 
 - Python 3.11 is needed, as it is the main language of this program and needed to run the code/syntax properly. 
 
 
-# NumPy
+-NumPy
 
 - NumPy has been utilized for the creation and initialization of matrices. For creating the output table in the scrolling_output.py module, NumPy is needed and preferred as it can perform the basic function of creating the initialized matrix, ready to be filled in with passed data from the parsing.py program.
 
