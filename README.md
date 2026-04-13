@@ -40,19 +40,19 @@ Executing the program is simple: Navigate to the Needleman_algorithm folder usin
 
 ## Program Files
 
-# main.py: Manages and coordinates all program modules, and is responsible for message execution to the terminal after the program runs. Contains the command-line interface for taking arguments. 
+-main.py: Manages and coordinates all program modules, and is responsible for message execution to the terminal after the program runs. Contains the command-line interface for taking arguments. 
 
-# input.py: Gathers user input for two sequences to be aligned, or permits for two .fasta file inputs, given the user’s choice. Located in the input_lib folder alongside an __init__ file for modularization. 
+-input.py: Gathers user input for two sequences to be aligned, or permits for two .fasta file inputs, given the user’s choice. Located in the input_lib folder alongside an __init__ file for modularization. 
 
-# validation.py: Makes sure that the nucleotide sequences contain valid characters and if provided .fasta input, cleans the sequences for further processing. Located in the validation_lib folder alongside an __init__ file for modularization.
+-validation.py: Makes sure that the nucleotide sequences contain valid characters and if provided .fasta input, cleans the sequences for further processing. Located in the validation_lib folder alongside an __init__ file for modularization.
 
-# get_scoring_parameters.py: Asks the user whether the program’s default scoring parameters should be used. If the user wants to input their own scoring parameters, they may choose to do so. Located in the parsing_lib folder with an __init__ file for modularization. 
+-get_scoring_parameters.py: Asks the user whether the program’s default scoring parameters should be used. If the user wants to input their own scoring parameters, they may choose to do so. Located in the parsing_lib folder with an __init__ file for modularization. 
 
-# parsing.py: Puts two DNA sequences in a table-like array for further processes. If the sequence lengths are not equal, the module is able to compensate and optimize during array creation. Located in the parsing_lib folder with an __init__ file for modularization.
+-parsing.py: Puts two DNA sequences in a table-like array for further processes. If the sequence lengths are not equal, the module is able to compensate and optimize during array creation. Located in the parsing_lib folder with an __init__ file for modularization.
 
-# scrolling_output.py: Fills in the table-like array, using the scoring parameters either provided by default or given by the user. Performs the traceback to find the optimal sequence alignment, using the highest values during each traceback step. Located in the scrolling_output_lib folder with an __init__ file for modularization.
+-scrolling_output.py: Fills in the table-like array, using the scoring parameters either provided by default or given by the user. Performs the traceback to find the optimal sequence alignment, using the highest values during each traceback step. Located in the scrolling_output_lib folder with an __init__ file for modularization.
 
-# report.py: Prints out the filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the Located in the report_lib folder with an __init__ file for modularization.
+-report.py: Prints out the filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the Located in the report_lib folder with an __init__ file for modularization.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
