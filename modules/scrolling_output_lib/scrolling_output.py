@@ -47,7 +47,7 @@ class GridBuild():
         return matrix
 
 
-   def view_traceback(
+    def view_traceback(
         self, 
         matrix: np.ndarray,
         seq_a: str, 

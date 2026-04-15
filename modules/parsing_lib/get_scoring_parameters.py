@@ -16,10 +16,21 @@ def get_scoring_parameters():
         mismatch_score = -1
         gap_penalty = -2
     else:
-        match_score = int(input("Enter the match score: "))#+2
-        mismatch_score = int(input("Enter the mismatch score: "))#-1
-        gap_penalty = int(input("Enter the gap penalty: "))#-2
-    
+        try:
+            match_score = int(input("Enter the match score: "))
+        except ValueError:
+            raise ValueError("Match score must be an integer.")
+
+        try:
+            mismatch_score = int(input("Enter the mismatch score: "))
+        except ValueError:
+            raise ValueError("Mismatch score must be an integer.")
+
+        try:
+            gap_penalty = int(input("Enter the gap penalty: "))
+        except ValueError:
+            raise ValueError("Gap penalty must be an integer.")
+
     return match_score, mismatch_score, gap_penalty
 
 if __name__ == "__main__":

@@ -62,21 +62,31 @@ def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=
         match_score, mismatch_score, gap_penalty = get_scoring_parameters()
 
     # step 2: build the Needleman-Wunsch scoring matrix
-    seq_a = file_from_input.seq_a  # columns
-    seq_b = file_from_input.seq_b  # rows
+    try:
+        seq_a = file_from_input.seq_a  # columns
+        seq_b = file_from_input.seq_b  # rows
+    except AttributeError as e:
+        raise AttributeError(f"Input object is missing sequence data: {e}")
 
     rows = len(seq_b) + 1
     cols = len(seq_a) + 1
 
-    matrix = np.zeros((rows, cols), dtype=int)
+    try:
+        matrix = np.zeros((rows, cols), dtype=int)
+    except ValueError as e:
+        raise ValueError(f"Could not allocate scoring matrix ({rows}x{cols}): {e}")
 
     # initialize borders with numpy slicing instead of loops
     matrix[1:, 0] = np.arange(1, rows) * gap_penalty
     matrix[0, 1:] = np.arange(1, cols) * gap_penalty
 
     # precompute match/mismatch scores for every (i,j) pair at once
-    seq_b_arr = np.frombuffer(seq_b.encode(), dtype=np.uint8)
-    seq_a_arr = np.frombuffer(seq_a.encode(), dtype=np.uint8)
+    try:
+        seq_b_arr = np.frombuffer(seq_b.encode(), dtype=np.uint8)
+        seq_a_arr = np.frombuffer(seq_a.encode(), dtype=np.uint8)
+    except (UnicodeEncodeError, AttributeError) as e:
+        raise ValueError(f"Sequences must be ASCII strings: {e}")
+
     diag_scores = np.where(seq_b_arr[:, None] == seq_a_arr[None, :], match_score, mismatch_score)
 
     # fill matrix — single pass, no character comparison inside the loop
@@ -87,8 +97,11 @@ def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=
             left     = matrix[i, j - 1] + gap_penalty
             matrix[i, j] = max(diagonal, up, left)
 
-    grid = GridBuild()
-    grid.matrix_construct(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
+    try:
+        grid = GridBuild()
+        grid.matrix_construct(matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty)
+    except Exception as e:
+        raise RuntimeError(f"Failed to construct display grid: {e}")
 
     return matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty
 
