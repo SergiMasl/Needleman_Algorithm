@@ -11,21 +11,25 @@
 
 escott60@charlotte.edu
 801453399
+GitHub: escott60
 
 ### Sergey Maslinikov
 
 smaslini@charlotte.edu
 801454115
+GitHub: SergiMasl
 
 ### Mehrnoush Fereydouni
 
 mfereydo@charlotte.edu
 801311759
+GitHub: MehrnoushF 
 
 ### Alyssa Leite
 
 aleite@charlotte.edu
 801495851
+GitHub: agleite19
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
