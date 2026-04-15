@@ -8,7 +8,7 @@ Returns False on any error for next module to handle.
 
 import sys
 from dataclasses import dataclass
-from modules.volidation_lib.validation import validate_dna_sequence
+from modules.validation_lib.validation import validate_dna_sequence
 
 
 @dataclass
