@@ -8,16 +8,11 @@ import numpy as np #give abbreviation to numpy
 import sys
 from typing import List, Tuple
 from collections import deque
-#import numba
+from numba import njit 
 
-"""
-3/26/2026 Update: The script has been tested and works well. However, it can be
-further optimized in terms of memory preallocation and the addition of docstrings.
-"""
-#from parsing_lib.parsing import (the parsing return)
 
 class GridBuild():
-
+    @njit
     def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
         """
         Purpose: Initialize a matrix with the sequences, getting it ready for output
@@ -26,6 +21,9 @@ class GridBuild():
         
         Returns: Return a tuple containing initialized rows and columns
         """
+        rows = len(seq_a) + 1
+        cols = len(seq_b) + 1
+        matrix = np.zeros((rows, cols), dtype=np.int32)
         matrix[:, 0] = np.arange(rows) * gap
         matrix[0, :] = np.arange(cols) * gap
 
@@ -57,8 +55,9 @@ class GridBuild():
         gap: int
     ) -> Tuple[List, List]:
 
-        i, j = matrix.shape[0] - 1, matrix.shape[1] - 1 
-        #this made me mad because it gave me so many errors
+        i = matrix.shape[0] - 1
+        j = matrix.shape[1] - 1 
+
         seq_align_a = deque()
         seq_align_b = deque()
 
@@ -98,11 +97,9 @@ class GridBuild():
                 seq_align_b.appendleft(seq_b[j - 1])
                 j -= 1
 
-                #use appendleft() instead of append() + reverse() for optimization
-
         return seq_align_a, seq_align_b 
 
-#Make sure to get the consensus sequence (best aligning) amongst the two (N as placeholder)
+
     def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
         consensus_seq = []
         for a, b in zip(seq_align_a, seq_align_b):
@@ -116,7 +113,10 @@ class GridBuild():
                 consensus_seq.append("N") #one or the other
         return consensus_seq 
 
-# TESTING/TROUBLESHOOTING CLASS CALLING AND INPUT PROCESSING THROUGH FUNCTIONS
+"""
+-----------------------------------------------------------------------------------------------------------
+
+TESTING/TROUBLESHOOTING DOCSTRING (When calling on scrolling_output.py)
 
 if __name__ == "__main__":
     call_grid = GridBuild()
@@ -140,51 +140,54 @@ if __name__ == "__main__":
         "AGATCATCTGTACATT")
     print(optimal_seq)
 
+-----------------------------------------------------------------------------------------------------------
 
-#Pseudocode: 
-#Consider putting everything into a class?
-#Make sure to get all the input parameters
-#Parameters should include:
-    #sequence 1
-    #sequence 2
-    #match score
-    #mismatch score
-    #gap penalties
-#Take all passed input/output from parsing.py
-#Initialize the matrix and get it formatted for printing
-#Functions should include: 
-    #Matrix initialization 
-    #Matrix construction
-    #Matrix annotating/traceback
-    #Matrix printing
+"""
+"""
+-----------------------------------------------------------------------------------------------------------
 
-#Questions: 
-    #How will the parsing.py output be returned? 
-    #How can the matrix initialization function take and utilize all parameters?
-    #How do I fully utilize numpy for this? It appears to be necessary
-    #Should re be imported for regex commands and fine-tuning?
-    #What other modules should I import for this? 
+PSEUDOCODE DOCSTRING
 
-#Citations: 
-#numpy info: https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
+Consider putting everything into a class?
+Make sure to get all the input parameters
+Parameters should include (self):
+    sequence 1
+    sequence 2
+    match score
+    mismatch score
+    gap penalties
+Take all passed input/output from parsing.py
+Initialize the matrix and get it formatted for printing
+Functions should include: 
+    Matrix initialization 
+    Matrix construction
+    Matrix annotating/traceback
+    Matrix printing(?)
 
+-----------------------------------------------------------------------------------------------------------
+Major Changes/Updates Timestamping: 
 
-#Ideas for other modules/main to discuss with team:
-    #We will definitely want to have a CLI developed in one of the functions
-    #Import argparse in this function
+4/12/2026 Update: Added docstrings to all functions, and made sure this module
+is fully integrated into program workflow. Imported numba for optimizing speed.
+(*Numba has been listed and detailed as a dependency in the README.md file.)
 
-#2/19/2026
-# def scrolling_output():
-#     """
-#         Purpose: Create image and table output for user
-#         Input: Scoring matrix file 
-#         Output: Image (likely .png), and a file (.csv or .tsv) of top three choices 
-#         High-level steps: 
-#         -    Create image formatting for the raw input data alongside the scoring and optimal traceback paths 
-#         -    Export the image in a viewable, legible format 
-#             .png, jpeg, .pdf 
+----------------------------------------------------------------------------------------------------------- 
 
-#     """
-#     pass
+3/26/2026 Update: The script has been tested and works well. However, it can be
+further optimized in terms of memory preallocation and the addition of docstrings.
 
-#     #Em will be doing the scrolling output function(s)
+-----------------------------------------------------------------------------------------------------------
+
+2/19/2026
+
+Scrolling output brainstorming: 
+
+Purpose: Create image and table output for user
+Input: Scoring matrix file 
+Output: Image (likely .png), and a file (.csv or .tsv) of top three choices 
+High-level steps: 
+Create image formatting for the raw input data alongside the scoring and optimal traceback paths 
+Export the image in a viewable, legible format 
+.png, jpeg, .pdf 
+
+-----------------------------------------------------------------------------------------------------------
