@@ -11,6 +11,13 @@ def default_report_name() -> str:
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S.pdf")
 
 
+def _gc_content(seq: str) -> float:
+    """Return GC content as a percentage (0-100) for a DNA sequence."""
+    seq = seq.upper()
+    gc = sum(1 for base in seq if base in ("G", "C"))
+    return (gc / len(seq) * 100) if seq else 0.0
+
+
 def report(matrix: np.ndarray, seq_a: str, seq_b: str,
            match: int, mismatch: int, gap: int,
            output_path: str = None) -> str:
@@ -59,9 +66,34 @@ def report(matrix: np.ndarray, seq_a: str, seq_b: str,
         fontsize=11
     )
 
+    # --- Sequence statistics page ---
+    gc_a = _gc_content(seq_a)
+    gc_b = _gc_content(seq_b)
+
+    stats_labels = ["Metric", "Sequence A", "Sequence B"]
+    stats_data = [
+        ["Base pairs", str(len(seq_a)), str(len(seq_b))],
+        ["GC content (%)", f"{gc_a:.1f}", f"{gc_b:.1f}"],
+    ]
+
+    fig2, ax2 = plt.subplots(figsize=(6, 2))
+    ax2.axis("off")
+    stats_table = ax2.table(
+        cellText=stats_data,
+        colLabels=stats_labels,
+        loc="center",
+        cellLoc="center"
+    )
+    stats_table.auto_set_font_size(False)
+    stats_table.set_fontsize(10)
+    stats_table.scale(1, 1.8)
+    fig2.suptitle("Sequence Statistics", fontsize=12, fontweight="bold")
+
     with PdfPages(output_path) as pdf:
         pdf.savefig(fig, bbox_inches="tight")
+        pdf.savefig(fig2, bbox_inches="tight")
 
     plt.close(fig)
+    plt.close(fig2)
     print(f"Report saved to: {output_path}")
     return output_path
