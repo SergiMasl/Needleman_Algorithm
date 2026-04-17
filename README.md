@@ -60,6 +60,36 @@ Executing the program is simple: Navigate to the Needleman_algorithm folder usin
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
+## Command Line Interface Options
+
+A command line interface (CLI) has been added to main.py for optimal handling of input arguments. The CLI Information is listed below:
+
+-First Sequence: "-i", "--firstseq"
+ Information: The first uploaded sequence, denoted as "i"
+
+-Second Sequence: "-j", "--secondseq"
+ Infomation: The second uploaded sequence, denoted as "j"
+
+-Input Fasta File: "-f", "--inputfasta"
+ Infomation: Fasta file inputs for parsing, cleaning, and validation
+
+-Match Scoring: "-m", "--match"
+ Infomation: Match score parameter in the case that two nucleotide
+ sequences align. 
+
+-Mismatch Scoring: "-n", "--mismatch"
+ Infomation: Mismatch score parameter in the case that two nucleotide
+ sequences do not align.
+
+-Gap Scoring: "-g", "--gapscore"
+ Information: Gap score parameter in the case that there is a gap in
+ one sequence or both sequences. 
+
+-Output PDF File: "-o", "--outputpdf"
+ Information: Output file argument, formatted as a .pdf for easy
+ accessibility, printing, and documentation. 
+
+ ------------------------------------------------------------------------------------------------------------------------------------------
 
 ## License Information 
 
@@ -106,12 +136,12 @@ The Needleman-Wunsch Algorithm Program has a few dependencies that must be insta
 
 *All citations are APA Formatted:*
 
-#NumPy info: 
+# NumPy info: 
 
 NumPy Creating Arrays. (n.d.). Www.w3schools.com. https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
 
 
-#General Research: 
+# General Research: 
 
 Timur, A. (2024). Needleman-Wunsch-Algorithm [Review of Needleman-Wunsch-Algorithm]. GitHub; Abdulkerim Talha Timur. Retrieved 2 C.E., from https://github.com/ATalhaTimur/Needleman-Wunsch-Algorithm
 
