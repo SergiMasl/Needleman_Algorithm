@@ -1,47 +1,70 @@
 #!/usr/bin/env python3
 
+# -*- coding: utf-8 -*-
+
 #escott60@charlotte.edu
 #Em Scott
 
-#make a pdf output
-import numpy as np #give abbreviation to numpy
-import sys
+import numpy as np 
 from typing import List, Tuple
 from collections import deque
 from numba import njit 
 
+#IMPORTANT: The first running instance of this program will be slower due to Numba compiling data. 
+#After the initial slow run, the speed will be further optimized. 
 
 class GridBuild():
     @njit
-    def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
+    def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
         """
-        Purpose: Initialize a matrix with the sequences, getting it ready for output
+        Purpose: Initialize a matrix with the sequences by utilizing NumPy, getting it ready for output.
+        This function serves as the matrix set up, and creates what can be best described as a scoring
+        algorithm with the gap penalty score. 
 
-        Parameters: Take the input cleaned sequences and create a grid based on the size
+        Parameters: 
+        -Sequence a,
+        -Sequence b, 
+        -Gap penalty score 
         
-        Returns: Return a tuple containing initialized rows and columns
+        Returns: Returns the NumPy array, consisting of the sequence dimensions. 
         """
         rows = len(seq_a) + 1
         cols = len(seq_b) + 1
         matrix = np.zeros((rows, cols), dtype=np.int32)
+
+        #The leftmost column is used for initializing all rows
         matrix[:, 0] = np.arange(rows) * gap
+
+        #The top row is reserved for initializing all columns
         matrix[0, :] = np.arange(cols) * gap
 
-        #export to main to show the step of the initialization? 
         return matrix
+
 
     def matrix_construct(
         self, 
         matrix: np.ndarray,
         seq_a: str, 
         seq_b: str,
-        match: int, #get the defaults from CLI, implement getting user-specified parameters later 
-        #from parsing.py?
+        match: int, 
         mismatch: int, 
         gap: int
     ) -> np.ndarray:
+        """
+        Purpose: Simply passes the function to parsing.py for further construction of the matrix. The 
+        matrix constructed from the matrix_build() function is passed to def parsing() for match/mismatch 
+        calculations.
 
-        # matrix is already filled by parsing.py — no work needed here
+        Parameters: 
+        -Matrix (np.ndarray)
+        -Sequence a,
+        -Sequence b, 
+        -Match Score
+        -Mismatch Score
+        -Gap penalty score 
+        
+        Returns: Just returns the matrix from the parsing function in parsing.py
+        """
         return matrix
 
 
@@ -54,45 +77,71 @@ class GridBuild():
         mismatch: int,
         gap: int
     ) -> Tuple[List, List]:
+        """
+        Purpose: Calculates the optimal alignment path by moving left, upwards, or diagonally
+        across the matrix from the bottom right corner.
 
+        Parameters: 
+        -Matrix (np.ndarray)
+        -Sequence a,
+        -Sequence b, 
+        -Match Score
+        -Mismatch Score
+        -Gap penalty score 
+        
+        Returns: Returns a tuple of two lists. 
+
+        *Note: The two lists are modified with the deque import, but are still considered lists 
+        or "list-like objects". 
+        """
+        #Start at the bottom right corner of the matrix.
         i = matrix.shape[0] - 1
         j = matrix.shape[1] - 1 
 
+        #Use deque for easy appending/deleting at both ends of lists. Good for calculating alignment
+        #scores and traceback. 
         seq_align_a = deque()
         seq_align_b = deque()
 
+        #i for rows
+        #j for columns
+
+        #In the case that Sequence A (i) has no more nucleotides remaining
         while i > 0 or j > 0:
             if i == 0:
                 seq_align_a.appendleft("-")
                 seq_align_b.appendleft(seq_b[j-1])
                 j -= 1
                 continue
-
+        #In the case that Sequence B (j) has no more nucleotides remaining
             if j == 0:
                 seq_align_a.appendleft(seq_a[i-1])
                 seq_align_b.appendleft("-")
                 i -= 1
                 continue
 
-            current = matrix[i, j]
-            diag = matrix[i-1, j-1]
-            up = matrix[i-1, j]
-            left = matrix[i, j-1]
+            current = matrix[i, j] #remain constant
+            diag = matrix[i-1, j-1] #move left and up
+            up = matrix[i-1, j] #move up one row
+            left = matrix[i, j-1] #move up one column
 
+            #Matches:
             score_di = diag + (match if seq_a[i-1] == seq_b[j-1] else mismatch)
+
+            #Mismatches:
             score_up = up + gap
             score_left = left + gap
         
-            if current == score_di:
+            if current == score_di: #move diagonally
                 seq_align_a.appendleft(seq_a[i - 1])
                 seq_align_b.appendleft(seq_b[j - 1])
                 i -= 1
                 j -= 1
-            elif current == score_up:
+            elif current == score_up: #move up
                 seq_align_a.appendleft(seq_a[i - 1])
                 seq_align_b.appendleft("-")
                 i -= 1
-            else: # go left:
+            else: #move left:
                 seq_align_a.appendleft("-")
                 seq_align_b.appendleft(seq_b[j - 1])
                 j -= 1
@@ -101,17 +150,31 @@ class GridBuild():
 
 
     def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
+        """
+        Purpose: Determines the consensus sequence from the alignment. 
+
+        Parameters: 
+        -Aligned Sequence A
+        -Aligned Sequence B
+
+        Returns: A list containing the determined consensus sequence. 
+        """
         consensus_seq = []
         for a, b in zip(seq_align_a, seq_align_b):
+        #Doesn't matter here whether the NT from Sequence A or B is appended since it's a match.
             if a == b:
                 consensus_seq.append(a)
+        #If Sequence A's NT is a gap, append the NT from Sequence B:
             elif a == "-":
                 consensus_seq.append(b)
+        #If Sequence B's NT is a gap, append the NT from Sequence A:
             elif b == "-":
                 consensus_seq.append(a)
+        #If both have a nucleotide and disagree:
             else:
-                consensus_seq.append("N") #one or the other
+                consensus_seq.append("N")
         return consensus_seq 
+
 
 """
 -----------------------------------------------------------------------------------------------------------
@@ -191,3 +254,4 @@ Export the image in a viewable, legible format
 .png, jpeg, .pdf 
 
 -----------------------------------------------------------------------------------------------------------
+"""
