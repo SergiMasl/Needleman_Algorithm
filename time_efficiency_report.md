@@ -13,7 +13,7 @@ Where `m` = length of seq_a, `n` = length of seq_b.
 
 ---
 
-## Optimizations Applied (2026-04-02)
+## Optimizations Applied (2026-04-02, updated 2026-04-16)
 
 ### 1. Removed Duplicate Matrix Fill
 
@@ -71,17 +71,48 @@ diagonal = matrix[i - 1, j - 1] + diag_scores[i - 1, j - 1]
 
 ---
 
+### 4. Numba JIT on `matrix_build` (2026-04-16)
+
+**Change:** Added `@njit` decorator from `numba` to `matrix_build()` in `scrolling_output.py`. The function was also refactored to self-initialize the matrix (allocates `np.zeros`, fills borders) entirely inside the JIT-compiled function rather than relying on the caller.
+
+**Before:**
+```python
+def matrix_build(self, seq_a, seq_b, gap):
+    ...
+```
+
+**After:**
+```python
+from numba import njit
+
+@njit
+def matrix_build(seq_a, seq_b, gap):
+    rows = len(seq_a) + 1
+    cols = len(seq_b) + 1
+    matrix = np.zeros((rows, cols), dtype=np.int32)
+    matrix[:, 0] = np.arange(rows) * gap
+    matrix[0, :] = np.arange(cols) * gap
+    return matrix
+```
+
+**Impact:** Matrix initialization now runs as compiled machine code via LLVM. First invocation incurs a one-time JIT compilation cost; all subsequent calls are significantly faster. This also consolidates allocation and border-fill into a single compiled pass.
+
+**Note:** The first run of the program will be slower than usual due to Numba's ahead-of-time compilation step. Subsequent runs use the cached compiled version.
+
+---
+
 ## Remaining Bottleneck
 
-The inner loop over the matrix is still a pure Python `for` loop. Full vectorization of the NW recurrence is not possible in the standard approach because each cell depends on its diagonal, upper, and left neighbors (sequential data dependency).
+The `view_traceback()` inner loop is still a pure Python `for` loop. Full vectorization of the NW traceback is not straightforward because each step depends on the current cell's neighbors (sequential data dependency).
 
-For sequences longer than ~2,000 bases, this loop will remain slow. Future options if needed:
+For sequences longer than ~2,000 bases, this loop will remain the dominant cost. Options if further optimization is needed:
 
-| Approach | Benefit | Cost |
-|---|---|---|
-| `numba` JIT (`@njit`) | 10–100× speedup on the loop | New dependency |
-| Anti-diagonal vectorization | Full NumPy, no new deps | Complex to implement |
-| `Biopython` pairwise aligner | Highly optimized C backend | Major dependency |
+| Approach | Benefit | Cost | Status |
+|---|---|---|---|
+| `numba` JIT (`@njit`) on `matrix_build` | Fast matrix init | One-time compile cost | **Implemented (2026-04-16)** |
+| `@njit` on `view_traceback` | 10–100× speedup on traceback | Requires rewriting deque logic with plain arrays | Not yet applied |
+| Anti-diagonal vectorization (NW fill) | Full NumPy, no new deps | Complex to implement | Not applied |
+| `Biopython` pairwise aligner | Highly optimized C backend | Major dependency, replaces core logic | Not applied |
 
 ---
 
@@ -92,4 +123,5 @@ For sequences longer than ~2,000 bases, this loop will remain slow. Future optio
 | Remove duplicate matrix fill | ~2× |
 | NumPy border init | Minor |
 | Precomputed diagonal scores | Moderate (scales with sequence length) |
-| **Total** | **~2–3× over original** |
+| Numba JIT on `matrix_build` | Significant for init; negligible vs. traceback loop |
+| **Total** | **~2–3× over original (traceback loop remains the bottleneck)** |
