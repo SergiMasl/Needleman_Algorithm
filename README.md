@@ -123,10 +123,17 @@ The Needleman-Wunsch Algorithm Program has a few dependencies that must be insta
 
 - Python 3.11 is needed, as it is the main language of this program and needed to run the code/syntax properly. 
 
-
 -NumPy
 
 - NumPy has been utilized for the creation and initialization of matrices. For creating the output table in the scrolling_output.py module, NumPy is needed and preferred as it can perform the basic function of creating the initialized matrix, ready to be filled in with passed data from the parsing.py program.
+
+- MatPlotLib
+
+- MatPlotLib is needed to create a formatted, readable alignment output for the program user to view. The .pdf report of the user's alignment is easily downloadable, printable, and compressable in a .zip file if need be for sharing and space allocation.
+
+- Numba
+
+- Numba is used to help compile the speed of the calculations in scrolling_output.py. Initially during the first simple alignment, Numba takes extra time to compile and initialize. Thus, the first alignment should be smaller sequences. After this initial compilation, Numba will run optimally and assist in speeding up the algorithm. 
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
