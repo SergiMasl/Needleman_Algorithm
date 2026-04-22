@@ -2,6 +2,7 @@ name: needleman_algorithm
 channels:
   - defaults
 dependencies:
+  - matplotlib
   - python=3.11
   - numpy
-  - matplotlib
+  - numba
