@@ -1,53 +1,94 @@
 #!/usr/bin/env python3
 
+# -*- coding: utf-8 -*-
+
 #escott60@charlotte.edu
 #Em Scott
 
-#make a pdf output
-import numpy as np #give abbreviation to numpy
-import sys
+import numpy as np 
 from typing import List, Tuple
 from collections import deque
-#import numba
+from numba import njit 
 
-"""
-3/26/2026 Update: The script has been tested and works well. However, it can be
-further optimized in terms of memory preallocation and the addition of docstrings.
-"""
-#from parsing_lib.parsing import (the parsing return)
+#IMPORTANT: The first running instance of this program will be slower due to Numba compiling data. 
+#After the initial slow run, the speed will be further optimized. 
 
 class GridBuild():
-
-    def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
+    @njit
+    def start_njit(rows: int, cols: int, gap: int) -> np.ndarray:
         """
-        Purpose: Initialize a matrix with the sequences, getting it ready for output
+        Purpose: Initialize a matrix with the sequences by utilizing NumPy, getting it ready 
+        for output. This function serves as the matrix set up, and creates a scoring
+        algorithm with the gap penalty score. Numba (@njit) is also optimized to run and 
+        compile with the lack of a "self" parameter
 
-        Parameters: Take the input cleaned sequences and create a grid based on the size
+        Parameters: 
+        -Rows
+        -Columns 
+        -Gap penalty score 
         
-        Returns: Return a tuple containing initialized rows and columns
+        Returns: Returns the NumPy array and its dimensions depending on the 
+        sequence lengths. 
         """
-        matrix[:, 0] = np.arange(rows) * gap
-        matrix[0, :] = np.arange(cols) * gap
+        #Set up the matrix as integers:
+        matrix = np.zeros((rows, cols), dtype=np.int32)
 
-        #export to main to show the step of the initialization? 
+        #The leftmost column is used for initializing all rows
+        matrix[:, 0] = np.arange(rows) * gap
+
+        #The top row is reserved for initializing all columns
+        matrix[0, :] = np.arange(cols) * gap
         return matrix
+
+
+    def matrix_build(self, seq_a: str, seq_b: str, gap: int) -> np.ndarray:
+        """
+        Purpose: Initialize the NumPy matrix with the sequences 
+
+        Parameters: 
+        -Sequence a,
+        -Sequence b, 
+        -Gap penalty score 
+        
+        Returns: Returns the NumPy array, with the matrix ready for calculations/traceback. 
+        """
+        #rows horizontally span the length of seq_a + 1 
+        rows = len(seq_a) + 1
+        #columns vertically span the length of seq_b + 1 
+        cols = len(seq_b) + 1
+
+        #return seq_a, seq_b, and the gap, but make sure it runs through the prior function.
+        return start_njit(rows, cols, gap)
+
 
     def matrix_construct(
         self, 
         matrix: np.ndarray,
         seq_a: str, 
         seq_b: str,
-        match: int, #get the defaults from CLI, implement getting user-specified parameters later 
-        #from parsing.py?
+        match: int, 
         mismatch: int, 
         gap: int
     ) -> np.ndarray:
+        """
+        Purpose: Simply passes the function to parsing.py for further construction of the matrix. The 
+        matrix constructed from the matrix_build() function is passed to def parsing() for match/mismatch 
+        calculations.
 
-        # matrix is already filled by parsing.py — no work needed here
+        Parameters: 
+        -Matrix (np.ndarray)
+        -Sequence a,
+        -Sequence b, 
+        -Match Score
+        -Mismatch Score
+        -Gap penalty score 
+        
+        Returns: Just returns the matrix from the parsing function in parsing.py
+        """
         return matrix
 
 
-   def view_traceback(
+    def view_traceback(
         self, 
         matrix: np.ndarray,
         seq_a: str, 
@@ -56,67 +97,109 @@ class GridBuild():
         mismatch: int,
         gap: int
     ) -> Tuple[List, List]:
+        """
+        Purpose: Calculates the optimal alignment path by moving left, upwards, or diagonally
+        across the matrix from the bottom right corner.
 
-        i, j = matrix.shape[0] - 1, matrix.shape[1] - 1 
-        #this made me mad because it gave me so many errors
+        Parameters: 
+        -Matrix (np.ndarray)
+        -Sequence a,
+        -Sequence b, 
+        -Match Score
+        -Mismatch Score
+        -Gap penalty score 
+        
+        Returns: Returns a tuple of two lists. 
+
+        *Note: The two lists are modified with the deque import, but are still considered lists 
+        or "list-like objects". 
+        """
+        #Start at the bottom right corner of the matrix.
+        i = matrix.shape[0] - 1
+        j = matrix.shape[1] - 1 
+
+        #Use deque for easy appending/deleting at both ends of lists. Good for calculating alignment
+        #scores and traceback. 
         seq_align_a = deque()
         seq_align_b = deque()
 
+        #i for rows
+        #j for columns
+
+        #In the case that Sequence A (i) has no more nucleotides remaining
         while i > 0 or j > 0:
             if i == 0:
                 seq_align_a.appendleft("-")
                 seq_align_b.appendleft(seq_b[j-1])
                 j -= 1
                 continue
-
+        #In the case that Sequence B (j) has no more nucleotides remaining
             if j == 0:
                 seq_align_a.appendleft(seq_a[i-1])
                 seq_align_b.appendleft("-")
                 i -= 1
                 continue
 
-            current = matrix[i, j]
-            diag = matrix[i-1, j-1]
-            up = matrix[i-1, j]
-            left = matrix[i, j-1]
+            current = matrix[i, j] #remain constant
+            diag = matrix[i-1, j-1] #move left and up
+            up = matrix[i-1, j] #move up one row
+            left = matrix[i, j-1] #move up one column
 
+            #Matches:
             score_di = diag + (match if seq_a[i-1] == seq_b[j-1] else mismatch)
+
+            #Mismatches:
             score_up = up + gap
             score_left = left + gap
         
-            if current == score_di:
+            if current == score_di: #move diagonally
                 seq_align_a.appendleft(seq_a[i - 1])
                 seq_align_b.appendleft(seq_b[j - 1])
                 i -= 1
                 j -= 1
-            elif current == score_up:
+            elif current == score_up: #move up
                 seq_align_a.appendleft(seq_a[i - 1])
                 seq_align_b.appendleft("-")
                 i -= 1
-            else: # go left:
+            else: #move left:
                 seq_align_a.appendleft("-")
                 seq_align_b.appendleft(seq_b[j - 1])
                 j -= 1
 
-                #use appendleft() instead of append() + reverse() for optimization
-
         return seq_align_a, seq_align_b 
 
-#Make sure to get the consensus sequence (best aligning) amongst the two (N as placeholder)
+
     def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
+        """
+        Purpose: Determines the consensus sequence from the alignment. 
+
+        Parameters: 
+        -Aligned Sequence A
+        -Aligned Sequence B
+
+        Returns: A list containing the determined consensus sequence. 
+        """
         consensus_seq = []
         for a, b in zip(seq_align_a, seq_align_b):
+        #Doesn't matter here whether the NT from Sequence A or B is appended since it's a match.
             if a == b:
                 consensus_seq.append(a)
+        #If Sequence A's NT is a gap, append the NT from Sequence B:
             elif a == "-":
                 consensus_seq.append(b)
+        #If Sequence B's NT is a gap, append the NT from Sequence A:
             elif b == "-":
                 consensus_seq.append(a)
+        #If both have a nucleotide and disagree:
             else:
-                consensus_seq.append("N") #one or the other
+                consensus_seq.append("N")
         return consensus_seq 
 
-# TESTING/TROUBLESHOOTING CLASS CALLING AND INPUT PROCESSING THROUGH FUNCTIONS
+
+"""
+-----------------------------------------------------------------------------------------------------------
+
+TESTING/TROUBLESHOOTING DOCSTRING (When calling on scrolling_output.py)
 
 if __name__ == "__main__":
     call_grid = GridBuild()
@@ -140,51 +223,55 @@ if __name__ == "__main__":
         "AGATCATCTGTACATT")
     print(optimal_seq)
 
+-----------------------------------------------------------------------------------------------------------
 
-#Pseudocode: 
-#Consider putting everything into a class?
-#Make sure to get all the input parameters
-#Parameters should include:
-    #sequence 1
-    #sequence 2
-    #match score
-    #mismatch score
-    #gap penalties
-#Take all passed input/output from parsing.py
-#Initialize the matrix and get it formatted for printing
-#Functions should include: 
-    #Matrix initialization 
-    #Matrix construction
-    #Matrix annotating/traceback
-    #Matrix printing
+"""
+"""
+-----------------------------------------------------------------------------------------------------------
 
-#Questions: 
-    #How will the parsing.py output be returned? 
-    #How can the matrix initialization function take and utilize all parameters?
-    #How do I fully utilize numpy for this? It appears to be necessary
-    #Should re be imported for regex commands and fine-tuning?
-    #What other modules should I import for this? 
+PSEUDOCODE DOCSTRING
 
-#Citations: 
-#numpy info: https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
+Consider putting everything into a class?
+Make sure to get all the input parameters
+Parameters should include (self):
+    sequence 1
+    sequence 2
+    match score
+    mismatch score
+    gap penalties
+Take all passed input/output from parsing.py
+Initialize the matrix and get it formatted for printing
+Functions should include: 
+    Matrix initialization 
+    Matrix construction
+    Matrix annotating/traceback
+    Matrix printing(?)
 
+-----------------------------------------------------------------------------------------------------------
+Major Changes/Updates Timestamping: 
 
-#Ideas for other modules/main to discuss with team:
-    #We will definitely want to have a CLI developed in one of the functions
-    #Import argparse in this function
+4/12/2026 Update: Added docstrings to all functions, and made sure this module
+is fully integrated into program workflow. Imported numba for optimizing speed.
+(*Numba has been listed and detailed as a dependency in the README.md file.)
 
-#2/19/2026
-# def scrolling_output():
-#     """
-#         Purpose: Create image and table output for user
-#         Input: Scoring matrix file 
-#         Output: Image (likely .png), and a file (.csv or .tsv) of top three choices 
-#         High-level steps: 
-#         -    Create image formatting for the raw input data alongside the scoring and optimal traceback paths 
-#         -    Export the image in a viewable, legible format 
-#             .png, jpeg, .pdf 
+----------------------------------------------------------------------------------------------------------- 
 
-#     """
-#     pass
+3/26/2026 Update: The script has been tested and works well. However, it can be
+further optimized in terms of memory preallocation and the addition of docstrings.
 
-#     #Em will be doing the scrolling output function(s)
+-----------------------------------------------------------------------------------------------------------
+
+2/19/2026
+
+Scrolling output brainstorming: 
+
+Purpose: Create image and table output for user
+Input: Scoring matrix file 
+Output: Image (likely .png), and a file (.csv or .tsv) of top three choices 
+High-level steps: 
+Create image formatting for the raw input data alongside the scoring and optimal traceback paths 
+Export the image in a viewable, legible format 
+.png, jpeg, .pdf 
+
+-----------------------------------------------------------------------------------------------------------
+"""
