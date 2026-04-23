@@ -11,6 +11,43 @@ def default_report_name() -> str:
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S.pdf")
 
 
+def _gc_content(seq: str) -> float:
+    """Return GC content as a percentage (0-100) for a DNA sequence."""
+    seq = seq.upper()
+    gc = sum(1 for base in seq if base in ("G", "C"))
+    return (gc / len(seq) * 100) if seq else 0.0
+
+def traceback_graphing(matrix: np.ndarray, seq_a: str, seq_b: str,
+                     match: int, mismatch: int, gap: int) -> set:
+
+    path = set()
+    i, j = matrix.shape[0] - 1, matrix.shape[1] - 1
+ 
+    while i > 0 or j > 0:
+        path.add((i, j))
+ 
+        if i == 0:
+            j -= 1
+        elif j == 0:
+            i -= 1
+        else:
+            score = match if seq_b[i - 1].upper() == seq_a[j - 1].upper() else mismatch
+            diag  = matrix[i - 1][j - 1] + score
+            up    = matrix[i - 1][j] + gap
+            left  = matrix[i][j - 1] + gap
+ 
+            current = matrix[i][j]
+            if current == diag:
+                i -= 1
+                j -= 1
+            elif current == up:
+                i -= 1
+            else:
+                j -= 1
+ 
+    path.add((0, 0))  # include the origin cell
+    return path
+
 def report(matrix: np.ndarray, seq_a: str, seq_b: str,
            match: int, mismatch: int, gap: int,
            output_path: str = None) -> str:
@@ -33,6 +70,9 @@ def report(matrix: np.ndarray, seq_a: str, seq_b: str,
         reports_dir.mkdir(exist_ok=True)
         output_path = str(reports_dir / default_report_name())
 
+    # Traceback: find which cells are on the optimal alignment path 
+    path_cells = traceback_graphing(matrix, seq_a, seq_b, match, mismatch, gap)
+
     col_labels = [" "] + list(seq_a)
     row_labels = [" "] + list(seq_b)
     cell_text = [[str(matrix[i][j]) for j in range(matrix.shape[1])]
@@ -53,15 +93,59 @@ def report(matrix: np.ndarray, seq_a: str, seq_b: str,
     table.set_fontsize(9)
     table.scale(1, 1.4)
 
+    # Highlight the traceback's path cells                                 
+    highlight_col  = "#B3B3B3"   # light grey fill
+    highlight_edge   = "#4A4A4A"   # darker outer border for highlighting
+    default_edge     = "#4A4A4A"
+ 
+    for (i, j), cell in table.get_celld().items():
+        # i==0 → column-header row; j==-1 → row-label column
+        if i == 0 or j == -1:
+            cell.set_edgecolor(default_edge)
+            continue
+        data_row = i - 1 # convert table row → matrix row
+        data_col = j # table col == matrix col (no offset needed)
+        if (data_row, data_col) in path_cells:
+            cell.set_facecolor(highlight_col)
+            cell.set_edgecolor(highlight_edge)
+            cell.set_text_props(fontweight="bold")
+        else:
+            cell.set_edgecolor(default_edge)
+
     fig.suptitle(
         f"Needleman-Wunsch Scoring Matrix\n"
-        f"match={match}  mismatch={mismatch}  gap={gap}",
+        f"match={match} mismatch={mismatch} gap={gap}",
         fontsize=11
     )
 
+    # Sequence stats
+    gc_a = _gc_content(seq_a)
+    gc_b = _gc_content(seq_b)
+
+    stats_labels = ["Metric", "Sequence A", "Sequence B"]
+    stats_data = [
+        ["Base pairs", str(len(seq_a)), str(len(seq_b))],
+        ["GC content (%)", f"{gc_a:.1f}", f"{gc_b:.1f}"],
+    ]
+
+    fig2, ax2 = plt.subplots(figsize=(6, 2))
+    ax2.axis("off")
+    stats_table = ax2.table(
+        cellText=stats_data,
+        colLabels=stats_labels,
+        loc="center",
+        cellLoc="center"
+    )
+    stats_table.auto_set_font_size(False)
+    stats_table.set_fontsize(10)
+    stats_table.scale(1, 1.8)
+    fig2.suptitle("Sequence Statistics", fontsize=12, fontweight="bold")
+
     with PdfPages(output_path) as pdf:
         pdf.savefig(fig, bbox_inches="tight")
+        pdf.savefig(fig2, bbox_inches="tight")
 
     plt.close(fig)
+    plt.close(fig2)
     print(f"Report saved to: {output_path}")
     return output_path
