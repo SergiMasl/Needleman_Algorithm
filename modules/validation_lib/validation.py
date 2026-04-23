@@ -9,7 +9,9 @@ Features:
 - Ensures sequences contain only A, C, G, T
 - Validates integer inputs when needed
 """
-# Updated by: Mehrnoush Fereydouni: April 9, 2026
+
+# Updated by: Mehrnoush Fereydouni
+# Last Updated: April 23, 2026
 # Changes:
 # - Replaced bare except with 'except Exception'
 # - Added type hints to validate_int and validate_scoring
@@ -23,13 +25,17 @@ VALID_DNA = {"A", "C", "G", "T"}
 
 def normalize_sequence(seq: str | None) -> str:
     """
-    Clean a DNA sequence by removing whitespace and converting to uppercase.
+    Purpose:
+        Clean a DNA sequence by removing whitespace and converting it to uppercase.
 
-    Args:
+    Parameters:
         seq: Raw input DNA sequence.
 
     Returns:
         Cleaned DNA sequence as an uppercase string.
+
+    Example:
+        normalize_sequence("a c g t") -> "ACGT"
     """
     if seq is None:
         return ""
@@ -38,17 +44,22 @@ def normalize_sequence(seq: str | None) -> str:
 
 def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
     """
-    Validate a DNA sequence (A, C, G, T only).
+    Purpose:
+        Validate that a DNA sequence contains only valid nucleotides
+        (A, C, G, and T).
 
-    Args:
+    Parameters:
         seq: Input DNA sequence.
         name: Label used in error messages.
 
     Returns:
-        Cleaned, validated DNA sequence.
+        Cleaned and validated DNA sequence.
 
     Raises:
         ValueError: If the sequence is empty or contains invalid characters.
+
+    Example:
+        validate_dna_sequence("acgt") -> "ACGT"
     """
     cleaned = normalize_sequence(seq)
 
@@ -58,6 +69,7 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
             f"{name} is empty. Please enter a DNA sequence using only A, C, G, and T."
         )
 
+    # Identify invalid DNA characters
     invalid_chars = sorted(set(cleaned) - VALID_DNA)
     if invalid_chars:
         raise ValueError(
@@ -70,9 +82,10 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
 
 def validate_int(value: object, name: str) -> int:
     """
-    Validate that a value can be converted to an integer.
+    Purpose:
+        Validate that a value can be converted to an integer.
 
-    Args:
+    Parameters:
         value: Input value.
         name: Label used in error messages.
 
@@ -81,6 +94,9 @@ def validate_int(value: object, name: str) -> int:
 
     Raises:
         ValueError: If the value is not a valid integer.
+
+    Example:
+        validate_int("2", "match") -> 2
     """
     try:
         return int(value)
@@ -90,9 +106,10 @@ def validate_int(value: object, name: str) -> int:
 
 def validate_scoring(match: int, mismatch: int, gap: int) -> tuple[int, int, int]:
     """
-    Validate scoring configuration before alignment.
+    Purpose:
+        Validate scoring configuration before alignment.
 
-    Args:
+    Parameters:
         match: Match score.
         mismatch: Mismatch score.
         gap: Gap penalty.
@@ -102,6 +119,9 @@ def validate_scoring(match: int, mismatch: int, gap: int) -> tuple[int, int, int
 
     Raises:
         ValueError: If all scoring values are zero.
+
+    Example:
+        validate_scoring(2, -1, -2) -> (2, -1, -2)
     """
     if match == 0 and mismatch == 0 and gap == 0:
         raise ValueError(
@@ -112,4 +132,3 @@ def validate_scoring(match: int, mismatch: int, gap: int) -> tuple[int, int, int
 
 
 # Mehrnoush will be doing the validation function(s)
-
