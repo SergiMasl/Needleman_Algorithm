@@ -1,10 +1,32 @@
-# Run from project root with:
-# python -m modules.validation_lib.test_validation
+"""
+test_validation.py
+
+Test script for validation.py
+
+Purpose:
+- Test DNA sequence validation with valid and invalid inputs
+- Test integer validation with valid and invalid values
+- Confirm that error handling works correctly
+
+Run from project root with:
+python -m modules.validation_lib.test_validation
+"""
+
+# Updated by: Mehrnoush Fereydouni
+# Last Updated: April, 23 2026
+# Changes:
+# - Added test cases for DNA sequence validation
+# - Added test cases for integer validation
+# - Added PASS / FAIL output formatting
+# - Included valid and invalid input examples
+
 
 from modules.validation_lib.validation import validate_dna_sequence, validate_int
 
-print("---- DNA sequence tests ----")
 
+print("---- DNA Sequence Tests ----")
+
+# Test DNA sequence inputs
 test_sequences = [
     ("ACGT", "seq1"),
     ("acgt", "seq2"),
@@ -21,8 +43,10 @@ for seq, name in test_sequences:
     except ValueError as e:
         print(f"{name}: FAIL -> {e}")
 
-print("\n---- Integer tests ----")
 
+print("\n---- Integer Tests ----")
+
+# Test integer inputs
 test_values = [
     (2, "match"),
     ("-1", "mismatch"),
