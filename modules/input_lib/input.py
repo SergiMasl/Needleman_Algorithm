@@ -14,7 +14,7 @@ from modules.validation_lib.validation import validate_dna_sequence
 @dataclass
 class SequenceInput:
     """
-    Stores the two DNA sequences and their names.
+    Dataclass "SequenceInput" that stores the two DNA sequences and their names (or attributes).
     This is what gets passed to main.py to then move forward into: 
         - parsing.py (uses seq_a, seq_b to build the scoring matrix)
         - scrolling_output (uses seq_a, seq_b for traceback display)
@@ -45,6 +45,9 @@ def parse_fasta_file(file: str):
         FileNotFoundError: If the file path does not exist on disk. 
             Caught internally - returns False instead of crashing. 
     """
+    # Use of the try/except block, this code is trying to open the file
+    # but if it doesnt exist, it won't crash and will print an error message 
+    # and return False. 
     try:
         fasta_file = open(file, "r")
         lines = fasta_file.readlines()
@@ -57,13 +60,17 @@ def parse_fasta_file(file: str):
         sys.stderr.write(f"[Error] File is empty: {file}\n")
         return False
 
+    
     label = file
     start = 0
 
+    # Setting the header as the label of the sequence
     if lines[0].startswith(">"):
         label = lines[0][1:].strip()
         start = 1
 
+    # Looping through remaining lines and building the sequence string. 
+    # Stops if it hits another > (which indicates the second sequence in file)
     sequence = ""
     for line in lines[start:]:
         if line.startswith(">"):
@@ -76,7 +83,7 @@ def parse_fasta_file(file: str):
 def read_two_fastas(file1: str, file2: str):
     """
     Reads two separate FASTA files and returns both sequences and their labels.
-    Calls parse_fasta_file() on each file individually. 
+    Calls parse_fasta_file() on each file individually, and calls it twice. 
     Returns False if either file fails to parse.
 
     Args: 
@@ -90,15 +97,18 @@ def read_two_fastas(file1: str, file2: str):
         False: If either fails to parse. 
 
     Raises: 
-        No expecptions raise directly, errors are handled inside 
+        No exceptions raised directly, errors are handled inside 
         parse_fasta_file() and returned as False. 
     """
+    # Is calling parse_fasta_file() function twice, once per file. If either
+    # one fails, it returns False without continuing. 
     result_a = parse_fasta_file(file1)
     result_b = parse_fasta_file(file2)
 
     if result_a is False or result_b is False:
         return False
 
+    # Unpacking both results from parse_fasta_file and return all four values as a tuple. 
     label_a, seq_a = result_a
     label_b, seq_b = result_b
 
@@ -128,12 +138,16 @@ def build_sequence_input(raw_a: str, raw_b: str, label_a: str, label_b: str) -> 
         ValueError: If either sequence is empty or contains characters other 
         than A, C, G, T. Caught internally, returns False instead of crashing. 
     """
+    # Use of a try/except block to run both sequences through validation.py module. If either
+    # has invalid characters, it riases a ValueError. 
     try:
         seq_a = validate_dna_sequence(raw_a, name=label_a)
         seq_b = validate_dna_sequence(raw_b, name=label_b)
     except ValueError as error:
+        # Catches the error, prints it, and returns False instead of crashing. 
         sys.stderr.write(f"[Error] {error}\n")
         return False
+    # If everything passed validation, packages it all into a SequenceInput object and returns it. 
     return SequenceInput(seq_a=seq_a, seq_b=seq_b, label_a=label_a, label_b=label_b)
 
 
@@ -142,10 +156,12 @@ def input_sequences(args):
     Asks the user whether to load sequences from a FASTA file or type them manually.
     Returns a SequenceInput object, or exits on error.
     """
+    # Asking user if they want to provide sequences, and will keep asking until user provides "fasta" or "manual".
     choice = input("Do you want to load sequences from a FASTA file or type them manually? (fasta/manual): ")
     while choice.lower() not in ["fasta", "manual"]:
         choice = input("Invalid input. Please enter 'fasta' or 'manual': ")
 
+    # If user chose FASTA, prompts for two file paths, parses each one, and exits with an error code if either fails. 
     if choice.lower() == "fasta":
         file_path_a = input("Enter full path to first FASTA file: ").strip()
         parsed_a = parse_fasta_file(file_path_a)
@@ -160,11 +176,13 @@ def input_sequences(args):
         label_b, seq_b = parsed_b
 
         result = build_sequence_input(seq_a, seq_b, label_a, label_b)
+    # If user chose manual, prompts for two raw sequences and gives them default labels "seq1" and "seq2". 
     else:
         raw_a = input("Enter first DNA sequence: ")
         raw_b = input("Enter second DNA sequence: ")
         result = build_sequence_input(raw_a, raw_b, "seq1", "seq2")
 
+    # Final check: if anything failed, exit. Otherwise return the SequenceInput object to be used by program. 
     if result is False:
         sys.exit(1)
     return result
