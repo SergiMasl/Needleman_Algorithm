@@ -1,4 +1,4 @@
-# Group 7 project: Needleman Algorithm
+# Group 7 project: Needleman Wunsch Algorithm Tool
 
 ## URL: https://github.com/SergiMasl/Needleman_Algorithm
 
@@ -23,75 +23,96 @@ GitHub: SergiMasl
 
 mfereydo@charlotte.edu
 801311759
-GitHub: MehrnoushF 
+GitHub: MehrnoushF
 
-### Alyssa Leite
-
+### Alyssa Leite 
 aleite@charlotte.edu
 801495851
 GitHub: agleite19
 
-------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------
 
-## General Information
+# General Information: Needleman Wunsch Algorithm Tool
 
-This project was created for bioinformatics and genomics-related purposes, aligning two nucleotide sequences to find the most optimal alignment pathways. A consensus sequence is created from the two aligned sequences after alignment and given as an output to the user’s terminal. A .pdf output is also reported after program execution and written to "reports".
+The Needleman-Wunsch Algorithm Tool is a start-to-finish Python implementation of the Needleman-Wunsch global alignment algorithm for pairwise alignment of two DNA sequences. It accepts input as either raw inline sequences or standard FASTA files, constructs a complete scoring matrix using user-defined match, mismatch, and gap parameters, and performs a full traceback to determine the most optimal alignment pathway. A consensus sequence is derived from the two aligned sequences and reported directly to the terminal via scrolling output. A formatted .pdf report containing the scoring matrix and sequence statistics is automatically generated and saved to `__Reports/` upon program completion.
 
-
-Executing the program is simple: Navigate to the Needleman_algorithm folder using your UNIX-supporting terminal, activate the .yml environment, and execute main.py after downloading the program. (Implement Bash script?) 
-
-------------------------------------------------------------------------------------------------------------------------------------------
-
-## Program Files
-
--main.py: Manages and coordinates all program modules, and is responsible for message execution to the terminal after the program runs. Contains the command-line interface for taking arguments. 
-
--input.py: Gathers user input for two sequences to be aligned, or permits for two .fasta file inputs, given the user’s choice. Located in the input_lib folder alongside an __init__ file for modularization. 
-
--validation.py: Makes sure that the nucleotide sequences contain valid characters and if provided .fasta input, cleans the sequences for further processing. Located in the validation_lib folder alongside an __init__ file for modularization.
-
--get_scoring_parameters.py: Asks the user whether the program’s default scoring parameters should be used. If the user wants to input their own scoring parameters, they may choose to do so. Located in the parsing_lib folder with an __init__ file for modularization. 
-
--parsing.py: Puts two DNA sequences in a table-like array for further processes. If the sequence lengths are not equal, the module is able to compensate and optimize during array creation. Located in the parsing_lib folder with an __init__ file for modularization.
-
--scrolling_output.py: Fills in the table-like array, using the scoring parameters either provided by default or given by the user. Performs the traceback to find the optimal sequence alignment, using the highest values during each traceback step. Located in the scrolling_output_lib folder with an __init__ file for modularization.
-
--report.py: Prints out the filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the Located in the report_lib folder with an __init__ file for modularization.
+Executing the program is straightforward: clone the repository, create and activate the provided Conda environment `(needleman_algorithm)`, and run python `main.py` from the project root. A bash script `(run_alignment.sh)` is also provided for streamlined execution with predefined input sequences and scoring parameters.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
-## Command Line Interface Options
+# Program Files
 
-A command line interface (CLI) has been added to main.py for optimal handling of input arguments. The CLI Information is listed below:
+`main.py`: Manages and coordinates all program modules, and is responsible for message execution to the terminal after the program runs. Contains the command-line interface for taking arguments. 
 
--First Sequence: "-i", "--firstseq"
- Information: The first uploaded sequence, denoted as "i"
+`input.py`: Gathers user input for two sequences to be aligned, or permits for two .fasta file inputs, given the user’s choice. Located in the `input_lib` folder alongside an `__init__` file for modularization. 
 
--Second Sequence: "-j", "--secondseq"
- Infomation: The second uploaded sequence, denoted as "j"
+`validation.py`: Makes sure that the nucleotide sequences contain valid characters and if provided .fasta input, cleans the sequences for further processing. Located in the `validation_lib` folder alongside an `__init__` file for modularization.
 
--Input Fasta File: "-f", "--inputfasta"
- Infomation: Fasta file inputs for parsing, cleaning, and validation
+`get_scoring_parameters.py`: Asks the user whether the program’s default scoring parameters should be used. If the user wants to input their own scoring parameters, they may choose to do so. Located in the `parsing_lib` folder with an `__init__` file for modularization. 
 
--Match Scoring: "-m", "--match"
- Infomation: Match score parameter in the case that two nucleotide
- sequences align. 
+`parsing.py`: Puts two DNA sequences in a table-like array for further processes. If the sequence lengths are not equal, the module is able to compensate and optimize during array creation. Located in the `parsing_lib` folder with an `__init__` file for modularization.
 
--Mismatch Scoring: "-n", "--mismatch"
- Infomation: Mismatch score parameter in the case that two nucleotide
- sequences do not align.
+`scrolling_output.py`: Fills in the table-like array, using the scoring parameters either provided by default or given by the user. Performs the traceback to find the optimal sequence alignment, using the highest values during each traceback step. Located in the `scrolling_output_lib` folder with an `__init__` file for modularization.
 
--Gap Scoring: "-g", "--gapscore"
- Information: Gap score parameter in the case that there is a gap in
- one sequence or both sequences. 
+`report.py`: Prints out the filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the `report_lib` folder with an `__init__` file for modularization.
 
--Output PDF File: "-o", "--outputpdf"
- Information: Output file argument, formatted as a .pdf for easy
- accessibility, printing, and documentation. 
+------------------------------------------------------------------------------------------------------------------------------------------
+# Input Options
 
+The tool accepts two DNA sequences via one of two modes, selected interactively at runtime.
+
+**Manual (inline)**
+
+Type sequences directly into the terminal when prompted. Sequences must contain only `A`, `C`, `G`, and `T` — lowercase is accepted and automatically converted to uppercase. Whitespace is stripped automatically.
+
+```
+Enter first DNA sequence:  AGATCATCTA
+Enter second DNA sequence: AGATCATCTG
+```
+
+**FASTA file**
+
+Provide the full path to two separate `.fasta` or `.fna` files, one per sequence. Each file must contain at least one sequence. Only the first sequence in each file is read. The header line (`>`) is optional — if present, it is used as the sequence label in the output report.
+
+```
+>seq1
+AGATCATCTA
+```
+------------------------------------------------------------------------------------------------------------------------------------------
+## Output Files
+
+**PDF Report** (`__Reports/<filename>.pdf`)
+
+Generated automatically after every run and saved to the `__Reports/` folder in the project root. The report contains two pages: a scoring matrix table with match/mismatch/gap parameters labeled, and a sequence statistics page showing length and GC content for both sequences. The default filename is a timestamp (`YYYY-MM-DD_HH-MM-SS.pdf`). A custom name can be passed with `--outputpdf`.
+
+**Terminal Output**
+
+The scoring matrix and traceback alignment are printed to the terminal during the run via `scrolling_output.py`. No separate file is written for this — it is display only.
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+# Command Line Interface Options
+
+A command line interface (CLI) has been added to `main.py` for optimal handling of input arguments. The CLI information is listed below:
+
+| Flag | Long Form | Default | Description |
+|------|-----------|---------|-------------|
+| `-i` | `--firstseq` | None | The first uploaded sequence, denoted as "i" |
+| `-j` | `--secondseq` | None | The second uploaded sequence, denoted as "j" |
+| `-f` | `--inputfasta` | `sequences.fasta` | FASTA file inputs for parsing, cleaning, and validation |
+| `-m` | `--match` | `2` | Match score parameter in the case that two nucleotide sequences align |
+| `-n` | `--mismatch` | `-1` | Mismatch score parameter in the case that two nucleotide sequences do not align |
+| `-g` | `--gapscore` | `-2` | Gap score parameter in the case that there is a gap in one sequence or both sequences |
+| `-o` | `--outputpdf` | timestamp | Output file argument, formatted as a `.pdf` for easy accessibility, printing, and documentation |
+
+### Example Usage
+```bash
+python main.py --match 2 --mismatch -1 --gapscore -2 --outputpdf my_alignment.pdf
+```
  ------------------------------------------------------------------------------------------------------------------------------------------
 
-## License Information 
+# License Information 
 
 This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
 
@@ -99,56 +120,67 @@ The GPL-3.0 is a strong copyleft license that ensures this gene comparison softw
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
-## Environment Setup 
+# Environment Setup
 
-1. Install Anaconda
-2. Clone the repository using git clone
-3. Create environment:
-   conda env create -f environment.yml
-4. Activate environment:
-   conda activate needleman_algorithm
-5. Run program:
-   python main.py
+1. Install [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://www.anaconda.com/download)
 
+2. Clone the repository:
+```bash
+git clone https://github.com/your-repo/Needleman_Algorithm.git
+cd Needleman_Algorithm
+```
+
+3. Create the conda environment:
+```bash
+conda env create -f environment.yml
+```
+
+4. Activate the environment:
+```bash
+conda activate needleman_algorithm
+```
+
+5. Run the program:
+```bash
+python main.py
+```
 ------------------------------------------------------------------------------------------------------------------------------------------
 
-## Dependencies
+# Dependencies
 
 The Needleman-Wunsch Algorithm Program has a few dependencies that must be installed on either the local machine where the program is executed, or within a Conda environment. The most convenient way to execute the program is to run “conda activate needleman_algorithm” on the local machine’s terminal with either Miniconda or Anaconda installed. The imported dependencies are listed and described below: 
 
 
 ## Main Program
 
--python=3.11
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| Python | 3.11 | Core language required to run the program |
+| NumPy | latest | Matrix creation and initialization for the scoring table |
+| Matplotlib | latest | Generates the PDF alignment report |
+| Numba | latest | Speeds up calculations in `scrolling_output.py`; note the first run is slower due to initial compilation |
 
-- Python 3.11 is needed, as it is the main language of this program and needed to run the code/syntax properly. 
+1. Python 3.11 is needed, as it is the main language of this program and needed to run the code/syntax properly. 
 
--NumPy
+2. NumPy has been utilized for the creation and initialization of matrices. For creating the output table in the `scrolling_output.py` module, NumPy is needed and preferred as it can perform the basic function of creating the initialized matrix, ready to be filled in with passed data from the `parsing.py` program.
 
-- NumPy has been utilized for the creation and initialization of matrices. For creating the output table in the scrolling_output.py module, NumPy is needed and preferred as it can perform the basic function of creating the initialized matrix, ready to be filled in with passed data from the parsing.py program.
+3. MatPlotLib is needed to create a formatted, readable alignment output for the program user to view. The .pdf report of the user's alignment is easily downloadable, printable, and compressable in a .zip file if need be for sharing and space allocation.
 
-- MatPlotLib
-
-- MatPlotLib is needed to create a formatted, readable alignment output for the program user to view. The .pdf report of the user's alignment is easily downloadable, printable, and compressable in a .zip file if need be for sharing and space allocation.
-
-- Numba
-
-- Numba is used to help compile the speed of the calculations in scrolling_output.py. Initially during the first simple alignment, Numba takes extra time to compile and initialize. Thus, the first alignment should be smaller sequences. After this initial compilation, Numba will run optimally and assist in speeding up the algorithm. 
-
+4. Numba is used to help compile the speed of the calculations in `scrolling_output.py`. Initially during the first simple alignment, Numba takes extra time to compile and initialize. Thus, the first alignment should be smaller sequences. After this initial compilation, Numba will run optimally and assist in speeding up the algorithm. 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 
 
-## Citations:
+# Citations:
 
 *All citations are APA Formatted:*
 
-# NumPy info: 
+## NumPy info: 
 
 NumPy Creating Arrays. (n.d.). Www.w3schools.com. https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
 
 
-# General Research: 
+## General Research: 
 
 Timur, A. (2024). Needleman-Wunsch-Algorithm [Review of Needleman-Wunsch-Algorithm]. GitHub; Abdulkerim Talha Timur. Retrieved 2 C.E., from https://github.com/ATalhaTimur/Needleman-Wunsch-Algorithm
 
