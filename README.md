@@ -126,8 +126,7 @@ The GPL-3.0 is a strong copyleft license that ensures this gene comparison softw
 
 2. Clone the repository:
 ```bash
-git clone https://github.com/your-repo/Needleman_Algorithm.git
-cd Needleman_Algorithm
+git clone https://github.com/SergiMasl/Needleman_Algorithm.git
 ```
 
 3. Create the conda environment:
