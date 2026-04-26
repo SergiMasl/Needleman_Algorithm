@@ -11,3 +11,4 @@ Em
 - make sure to traceback multiple top-scoring alignments
 - modify scrolling_output, report, and main to implement these
 - consider a sequence length cutoff for matplotlib report generation
+- add new citations after all edits 
