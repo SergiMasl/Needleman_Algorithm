@@ -36,142 +36,143 @@ from modules.report_lib.report import report, default_report_name
 
 
 class CreateAlignment:
-    """
-    Purpose:
-        Manage the overall execution flow of the program.
+	"""
+	Purpose:
+		Manage the overall execution flow of the program.
 
-    Functions:
-        create_parser() -> Builds command-line interface
-        main() -> Runs complete alignment workflow
-    """
+	Functions:
+		create_parser() -> Builds command-line interface
+		main() -> Runs complete alignment workflow
+	"""
 
-    @staticmethod
-    def create_parser() -> argparse.ArgumentParser:
-        """
-        Purpose:
-            Create command-line arguments for the program.
+	@staticmethod
+	def create_parser() -> argparse.ArgumentParser:
+		"""
+		Purpose:
+			Create command-line arguments for the program.
 
-        Returns:
-            Configured argparse parser object.
-        """
-        parser = argparse.ArgumentParser(
-            description="Needleman-Wunsch global alignment CLI"
-        )
+		Returns:
+			Configured argparse parser object.
+		"""
+		parser = argparse.ArgumentParser(
+			description="Needleman-Wunsch global alignment CLI"
+		)
 
-        parser.add_argument(
-            "-i",
-            "--firstseq",
-            type=str,
-            help="First input DNA sequence",
-        )
+		parser.add_argument(
+			"-i",
+			"--firstseq",
+			type=str,
+			help="First input DNA sequence",
+		)
 
-        parser.add_argument(
-            "-j",
-            "--secondseq",
-            type=str,
-            help="Second input DNA sequence",
-        )
+		parser.add_argument(
+			"-j",
+			"--secondseq",
+			type=str,
+			help="Second input DNA sequence",
+		)
 
-        parser.add_argument(
-            "-f",
-            "--inputfasta",
-            type=str,
-            default="sequences.fasta",
-            help="Input FASTA file containing sequences",
-        )
+		parser.add_argument(
+			"-f",
+			"--inputfasta",
+			type=str,
+			default="sequences.fasta",
+			help="Input FASTA file containing sequences",
+		)
 
-        parser.add_argument(
-            "-m",
-            "--match",
-            type=int,
-            default=2,
-            help="Match score",
-        )
+		parser.add_argument(
+			"-m",
+			"--match",
+			type=int,
+			default=2,
+			help="Match score",
+		)
 
-        parser.add_argument(
-            "-n",
-            "--mismatch",
-            type=int,
-            default=-1,
-            help="Mismatch penalty",
-        )
+		parser.add_argument(
+			"-n",
+			"--mismatch",
+			type=int,
+			default=-1,
+			help="Mismatch penalty",
+		)
 
-        parser.add_argument(
-            "-g",
-            "--gapscore",
-            type=int,
-            default=-2,
-            help="Gap penalty",
-        )
+		parser.add_argument(
+			"-g",
+			"--gapscore",
+			type=int,
+			default=-2,
+			help="Gap penalty",
+		)
 
-        parser.add_argument(
-            "-o",
-            "--outputpdf",
-            type=str,
-            default=default_report_name(),
-            help="Output PDF report filename",
-        )
+		parser.add_argument(
+			"-o",
+			"--outputpdf",
+			type=str,
+			default=default_report_name(),
+			help="Output PDF report filename",
+		)
 
-        return parser
+		return parser
 
-    @staticmethod
-    def main() -> None:
-        """
-        Purpose:
-            Run the complete program workflow.
+	@staticmethod
+	def main() -> None:
+		"""
+		Purpose:
+			Run the complete program workflow.
 
-        Steps:
-        1. Read command-line arguments
-        2. Collect sequence input
-        3. Retrieve scoring values
-        4. Run Needleman-Wunsch parsing
-        5. Generate final PDF report
-        """
-        parser = CreateAlignment.create_parser()
-        args = parser.parse_args()
+		Steps:
+		1. Read command-line arguments
+		2. Collect sequence input
+		3. Retrieve scoring values
+		4. Run Needleman-Wunsch parsing
+		5. Generate final PDF report
+		"""
+		parser = CreateAlignment.create_parser()
+		args = parser.parse_args()
 
-        # Retrieve sequence input
-        file_from_input = input_sequences(args)
+		# Retrieve sequence input
+		file_from_input = input_sequences(args)
 
-        # Retrieve scoring values
-        match_score = args.match
-        mismatch_score = args.mismatch
-        gap_penalty = args.gapscore
+		# Retrieve scoring values
+		match_score = args.match
+		mismatch_score = args.mismatch
+		gap_penalty = args.gapscore
 
-        # Run alignment algorithm
-        matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty = parsing(
-            file_from_input,
-            match_score,
-            mismatch_score,
-            gap_penalty,
-        )
+		# Run alignment algorithm
+		matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty, tie_point = parsing(
+			file_from_input,
+			match_score,
+			mismatch_score,
+			gap_penalty,
+		)
 
-        # Output report name
-        report_name = args.outputpdf
-        if not report_name.endswith(".pdf"):
-            report_name += ".pdf"
+		# Output report name
+		report_name = args.outputpdf
+		if not report_name.endswith(".pdf"):
+			report_name += ".pdf"
 
-        # Create reports folder if missing
-        reports_dir = Path(__file__).parent / "__Reports"
-        reports_dir.mkdir(exist_ok=True)
+		# Create reports folder if missing
+		reports_dir = Path(__file__).parent / "__Reports"
+		reports_dir.mkdir(exist_ok=True)
 
-        output_path = str(reports_dir / report_name)
+		output_path = str(reports_dir / report_name)
 
-        # Generate final report
-        report(
-            matrix,
-            seq_a,
-            seq_b,
-            match_score,
-            mismatch_score,
-            gap_penalty,
-            output_path=output_path,
-        )
+		# Generate final report
+		report(
+			matrix,
+			seq_a,
+			seq_b,
+			match_score,
+			mismatch_score,
+			gap_penalty,
+			tie_point=tie_point,
+			output_path=output_path,
+		)
 
-
+# Guard Function 
 if __name__ == "__main__":
-    CreateAlignment.main()
+	CreateAlignment.main()
 
-    # Remove temporary cache folders
-    for cache_dir in Path(__file__).parent.rglob("__pycache__"):
-        shutil.rmtree(cache_dir)
+	# Remove temporary cache folders
+	for cache_dir in Path(__file__).parent.rglob("__pycache__"):
+		shutil.rmtree(cache_dir)
