@@ -10,7 +10,7 @@ Em
 
 - make sure to traceback multiple top-scoring alignments (Complete)
 - modify scrolling_output, report, and main to implement these (Complete)
-- consider a sequence length cutoff for matplotlib report generation
+- consider a sequence length cutoff for matplotlib report generation (Tested with 100 bp sequences. .PDF is scrunched but completely readable with zoom-in. Will leave as is.)
 - add new citations after all edits (Complete)
 
 
@@ -26,4 +26,4 @@ FINAL CHECKS (WEDNESDAY REVIEW):
 - Review Denis' evaluation of our beta program
 - Optional: Make a clean overview of the PowerPoint Presentation
 
-- Note: I (Em) will have to practice the demo on one of your computers (Mac) since all of my devices are Windows and I'm not familiar with MacOS. 
+- Note: Em will have to practice the demo on one of your computers (Mac) since all of my devices are Windows and I'm not familiar with MacOS. 
