@@ -8,15 +8,16 @@ Sergey
 
 Em
 
-- make sure to traceback multiple top-scoring alignments (Ok)
-- modify scrolling_output, report, and main to implement these (Ok)
+- make sure to traceback multiple top-scoring alignments (Complete)
+- modify scrolling_output, report, and main to implement these (Complete)
 - consider a sequence length cutoff for matplotlib report generation
-- add new citations after all edits 
+- add new citations after all edits (Complete)
 
 
 FINAL CHECKS (WEDNESDAY REVIEW):
 
 - Make sure the code works with all user input options (Test Bash scripts)
+- *Ensure the consensus sequence is available and readable either in terminal or in report.py!!!
 - Try sequences of varying lengths, determine what should be the recommended cutoff to prevent heavy lag/delay
 - Make sure shebangs and UTF encodings are at the top of all scripts with text
 - Look for any missing type hints
