@@ -178,6 +178,11 @@ The Needleman-Wunsch Algorithm Program has a few dependencies that must be insta
 
 NumPy Creating Arrays. (n.d.). Www.w3schools.com. https://www.w3schools.com/python/numpy/numpy_creating_arrays.asp
 
+## Numba info:
+
+A ~5 minute guide to Numba — Numba documentation. (2019). Pydata.org. https://numba.pydata.org/numba-doc/dev/user/5minguide.html
+
+‌
 
 ## General Research: 
 
@@ -198,3 +203,9 @@ Anonymous (n.d.). __main__ — Top-level code environment — Python 3.10.4 docu
 Lord, D. (n.d.). click /README.md GitHub. Retrieved April 13, 2026, from https://github.com/pallets/click/blob/main/README.md
 
 Sujay, A. (2025). GitHub - ahishsujay/Sequence_Alignment: Python script for global and local sequence alignment. GitHub. https://github.com/ahishsujay/Sequence_Alignment
+
+GeeksforGeeks. (2017, July 15). numpy.arange() in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/numpy-arrange-in-python/
+
+‌GeeksforGeeks. (2025, February 6). Deque vs List in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/deque-vs-list-in-python/
+
+‌Python Optional Argument. (2026). Mimo.org. https://mimo.org/glossary/python/optional-arguments
