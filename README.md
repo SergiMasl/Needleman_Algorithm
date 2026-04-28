@@ -182,7 +182,7 @@ NumPy Creating Arrays. (n.d.). Www.w3schools.com. https://www.w3schools.com/pyth
 
 A ~5 minute guide to Numba — Numba documentation. (2019). Pydata.org. https://numba.pydata.org/numba-doc/dev/user/5minguide.html
 
-‌
+
 
 ## General Research: 
 
@@ -206,6 +206,6 @@ Sujay, A. (2025). GitHub - ahishsujay/Sequence_Alignment: Python script for glob
 
 GeeksforGeeks. (2017, July 15). numpy.arange() in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/numpy-arrange-in-python/
 
-‌GeeksforGeeks. (2025, February 6). Deque vs List in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/deque-vs-list-in-python/
+GeeksforGeeks. (2025, February 6). Deque vs List in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/deque-vs-list-in-python/
 
-‌Python Optional Argument. (2026). Mimo.org. https://mimo.org/glossary/python/optional-arguments
+Python Optional Argument. (2026). Mimo.org. https://mimo.org/glossary/python/optional-arguments

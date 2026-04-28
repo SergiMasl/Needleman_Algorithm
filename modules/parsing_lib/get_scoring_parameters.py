@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 def get_scoring_parameters():
     """
         Purpose: Gets the scoring parameters for the matrix from the user input
