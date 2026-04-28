@@ -24,6 +24,6 @@ FINAL CHECKS (WEDNESDAY REVIEW):
 - Annotate all code for easy explanation/studying
 - Go over the flowchart and make sure it accurately represents our logic
 - Review Denis' evaluation of our beta program
-- Optional: Make a clean overview of the PowerPoint Presentation
+- Optional: Make a clean overview of the PowerPoint Presentation (Complete)
 
 - Note: Em will have to practice the demo on one of your computers (Mac) since all of my devices are Windows and I'm not familiar with MacOS. 
