@@ -117,7 +117,7 @@ class GridBuild():
 			up = matrix[i - 1, j] #move up one row
 
 			#Matches:
-			score_di = diag + (match if seq_b[i - 1] == seq_a[j - 1] else mismatch)
+			score_di = diag + (match if seq_a[i - 1] == seq_b[j - 1] else mismatch)
 
 			#Mismatches:
 			score_up = up + gap
