@@ -11,7 +11,7 @@ Returns False on any error for next module to handle.
 
 import sys
 from dataclasses import dataclass
-from modules.validation_lib.validation import validate_dna_sequence
+from modules.validation_lib.validation import validate_dna_sequence, validate_fasta_dna
 
 
 @dataclass
@@ -164,25 +164,57 @@ def input_sequences(args):
     while choice.lower() not in ["fasta", "manual"]:
         choice = input("Invalid input. Please enter 'fasta' or 'manual': ")
 
-    # If user chose FASTA, prompts for two file paths, parses each one, and exits with an error code if either fails. 
+    # If user chose FASTA, prompts for two file paths, parses each one, and re-asks on failure.
     if choice.lower() == "fasta":
-        file_path_a = input("Enter full path to first FASTA file: ").strip()
-        parsed_a = parse_fasta_file(file_path_a)
-        if parsed_a is False:
-            sys.exit(1)
-        label_a, seq_a = parsed_a
+        while True:
+            file_path_a = input("Enter full path to first FASTA file: ").strip()
+            parsed_a = parse_fasta_file(file_path_a)
+            if parsed_a is False:
+                retry = input("File not found or empty. Try again or exit? (retry/exit): ").strip().lower()
+                while retry not in ["retry", "exit"]:
+                    retry = input("Please enter 'retry' or 'exit': ").strip().lower()
+                if retry == "exit":
+                    sys.exit(1)
+                continue
+            label_a, raw_a = parsed_a
+            seq_a = validate_fasta_dna(file_path_a, raw_a, label_a)
+            if seq_a is not False:
+                break
 
-        file_path_b = input("Enter full path to second FASTA file: ").strip()
-        parsed_b = parse_fasta_file(file_path_b)
-        if parsed_b is False:
-            sys.exit(1)
-        label_b, seq_b = parsed_b
+        while True:
+            file_path_b = input("Enter full path to second FASTA file: ").strip()
+            parsed_b = parse_fasta_file(file_path_b)
+            if parsed_b is False:
+                retry = input("File not found or empty. Try again or exit? (retry/exit): ").strip().lower()
+                while retry not in ["retry", "exit"]:
+                    retry = input("Please enter 'retry' or 'exit': ").strip().lower()
+                if retry == "exit":
+                    sys.exit(1)
+                continue
+            label_b, raw_b = parsed_b
+            seq_b = validate_fasta_dna(file_path_b, raw_b, label_b)
+            if seq_b is not False:
+                break
 
         result = build_sequence_input(seq_a, seq_b, label_a, label_b)
-    # If user chose manual, prompts for two raw sequences and gives them default labels "seq1" and "seq2". 
+    # If user chose manual, prompts for two raw sequences and gives them default labels "seq1" and "seq2".
     else:
-        raw_a = input("Enter first DNA sequence: ")
-        raw_b = input("Enter second DNA sequence: ")
+        while True:
+            raw_a = input("Enter first DNA sequence (A, T, C, G only): ").strip()
+            try:
+                validate_dna_sequence(raw_a, name="seq1")
+                break
+            except ValueError as error:
+                sys.stderr.write(f"[Error] {error}\n")
+
+        while True:
+            raw_b = input("Enter second DNA sequence (A, T, C, G only): ").strip()
+            try:
+                validate_dna_sequence(raw_b, name="seq2")
+                break
+            except ValueError as error:
+                sys.stderr.write(f"[Error] {error}\n")
+
         result = build_sequence_input(raw_a, raw_b, "seq1", "seq2")
 
     # Final check: if anything failed, exit. Otherwise return the SequenceInput object to be used by program. 

@@ -1,7 +1,6 @@
 # Error Handling Report
 
-**Project:** Phylogenetic Tree Annotation and Visualization (Needleman-Wunsch Alignment)
-**Author:** S_Maslinikov
+**Project:** Needleman-Wunsch Alignment
 **Date:** 2026-04-29
 
 ---

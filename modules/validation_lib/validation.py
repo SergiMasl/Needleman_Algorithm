@@ -83,6 +83,39 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
     return cleaned
 
 
+def validate_fasta_dna(file_path: str, raw_seq: str, label: str):
+    """
+    Purpose:
+        Validate DNA from a parsed FASTA file.
+        If the sequence contains invalid characters, reports which file is
+        broken and why, then prompts the user to retry with a new file or exit.
+
+    Parameters:
+        file_path: Path to the FASTA file (used in the error message).
+        raw_seq:   Raw sequence string read from the file.
+        label:     FASTA header label (used in the error message).
+
+    Returns:
+        Cleaned, uppercase DNA string on success.
+        False if the user chooses to retry (caller should re-prompt for a new file).
+        Calls sys.exit(1) if the user chooses to exit.
+
+    Example:
+        validate_fasta_dna("seq1.fasta", "acgt", "seq1") -> "ACGT"
+    """
+    import sys
+    try:
+        return validate_dna_sequence(raw_seq, name=label)
+    except ValueError as error:
+        sys.stderr.write(f"[Error] File '{file_path}' is invalid: {error}\n")
+        retry = input("Re-enter the correct file path or exit? (retry/exit): ").strip().lower()
+        while retry not in ["retry", "exit"]:
+            retry = input("Please enter 'retry' or 'exit': ").strip().lower()
+        if retry == "exit":
+            sys.exit(1)
+        return False
+
+
 def validate_int(value: object, name: str) -> int:
     """
     Purpose:
