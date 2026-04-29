@@ -84,24 +84,24 @@ class CreateAlignment:
 			"-m",
 			"--match",
 			type=int,
-			default=2,
-			help="Match score",
+			default=None,
+			help="Match score (default 2; omit to be prompted)",
 		)
 
 		parser.add_argument(
 			"-n",
 			"--mismatch",
 			type=int,
-			default=-1,
-			help="Mismatch penalty",
+			default=None,
+			help="Mismatch penalty (default -1; omit to be prompted)",
 		)
 
 		parser.add_argument(
 			"-g",
 			"--gapscore",
 			type=int,
-			default=-2,
-			help="Gap penalty",
+			default=None,
+			help="Gap penalty (default -2; omit to be prompted)",
 		)
 
 		parser.add_argument(

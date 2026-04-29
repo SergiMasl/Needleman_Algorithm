@@ -21,20 +21,17 @@ def get_scoring_parameters() -> Tuple[int, int, int]:
         mismatch_score = -1
         gap_penalty = -2
     else:
-        try:
-            match_score = int(input("Enter the match score: "))
-        except ValueError:
-            raise ValueError("Match score must be an integer.")
+        def prompt_int(prompt: str) -> int:
+            while True:
+                raw = input(prompt).strip()
+                try:
+                    return int(raw)
+                except ValueError:
+                    print("Invalid input. Please enter a whole number (e.g. 2, -1, +3).")
 
-        try:
-            mismatch_score = int(input("Enter the mismatch score: "))
-        except ValueError:
-            raise ValueError("Mismatch score must be an integer.")
-
-        try:
-            gap_penalty = int(input("Enter the gap penalty: "))
-        except ValueError:
-            raise ValueError("Gap penalty must be an integer.")
+        match_score    = prompt_int("Enter the match score: ")
+        mismatch_score = prompt_int("Enter the mismatch score: ")
+        gap_penalty    = prompt_int("Enter the gap penalty: ")
 
     return match_score, mismatch_score, gap_penalty
 
