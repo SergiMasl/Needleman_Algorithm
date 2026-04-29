@@ -4,7 +4,8 @@
 #escott60@charlotte.edu
 #Em Scott
 
-import numpy as np 
+import sys
+import numpy as np
 from typing import List, Tuple, Optional 
 from collections import deque
 from numba import njit 
@@ -366,9 +367,9 @@ TESTING/TROUBLESHOOTING DOCSTRING (When calling on scrolling_output.py)
 if __name__ == "__main__":
 	call_grid = GridBuild()
 	matrix = call_grid.matrix_build("AGATCATCTATCTA", "AGATCATCTGTACATT", -2) #sample
-	print(matrix)
+	sys.stdout.write(str(matrix) + "\n")
 	matrix = call_grid.matrix_construct(matrix, "AGATCATCTATCTA", "AGATCATCTGTACATT", 2, -1, -2) #sample
-	print(matrix)
+	sys.stdout.write(str(matrix) + "\n")
 
 	align_a, align_b = call_grid.view_traceback(
 		matrix,
@@ -377,13 +378,13 @@ if __name__ == "__main__":
 		2, -1, -2
 	)
 
-	print("Aligned A:", "".join(align_a))
-	print("Aligned B:", "".join(align_b))
+	sys.stdout.write("Aligned A: " + "".join(align_a) + "\n")
+	sys.stdout.write("Aligned B: " + "".join(align_b) + "\n")
 
 	optimal_seq = call_grid.best_sequence(
 		"AGATCATCTATCTA",
 		"AGATCATCTGTACATT")
-	print(optimal_seq)
+	sys.stdout.write(str(optimal_seq) + "\n")
 
 -----------------------------------------------------------------------------------------------------------
 

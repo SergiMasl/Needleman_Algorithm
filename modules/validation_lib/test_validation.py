@@ -21,10 +21,11 @@ python -m modules.validation_lib.test_validation
 # - Included valid and invalid input examples
 
 
+import sys
 from modules.validation_lib.validation import validate_dna_sequence, validate_int
 
 
-print("---- DNA Sequence Tests ----")
+sys.stdout.write("---- DNA Sequence Tests ----\n")
 
 # Test DNA sequence inputs
 test_sequences = [
@@ -39,12 +40,12 @@ test_sequences = [
 for seq, name in test_sequences:
     try:
         result = validate_dna_sequence(seq, name=name)
-        print(f"{name}: PASS -> {result}")
+        sys.stdout.write(f"{name}: PASS -> {result}\n")
     except ValueError as e:
-        print(f"{name}: FAIL -> {e}")
+        sys.stdout.write(f"{name}: FAIL -> {e}\n")
 
 
-print("\n---- Integer Tests ----")
+sys.stdout.write("\n---- Integer Tests ----\n")
 
 # Test integer inputs
 test_values = [
@@ -58,6 +59,6 @@ test_values = [
 for value, name in test_values:
     try:
         result = validate_int(value, name=name)
-        print(f"{name}: PASS -> {result}")
+        sys.stdout.write(f"{name}: PASS -> {result}\n")
     except ValueError as e:
-        print(f"{name}: FAIL -> {e}")
+        sys.stdout.write(f"{name}: FAIL -> {e}\n")

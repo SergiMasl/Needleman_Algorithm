@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 from typing import Tuple
 
 def get_scoring_parameters() -> Tuple[int, int, int]:
@@ -10,8 +11,8 @@ def get_scoring_parameters() -> Tuple[int, int, int]:
         Output: Match score, mismatch score, and gap penalty as integers
     """
     
-    print("default values for match score, mismatch score, and gap penalty are +2, -1, and -2 respectively.")
-    print("You can choose to use the default values or enter your own values.")
+    sys.stdout.write("default values for match score, mismatch score, and gap penalty are +2, -1, and -2 respectively.\n")
+    sys.stdout.write("You can choose to use the default values or enter your own values.\n")
     user_parameters = input("Do you want to use the default values? (yes/no): ")
     while user_parameters.lower() not in ["yes", "no"]:
         user_parameters = input("Invalid input. Please enter 'yes' or 'no': ")
@@ -27,7 +28,7 @@ def get_scoring_parameters() -> Tuple[int, int, int]:
                 try:
                     return int(raw)
                 except ValueError:
-                    print("Invalid input. Please enter a whole number (e.g. 2, -1, +3).")
+                    sys.stdout.write("Invalid input. Please enter a whole number (e.g. 2, -1, +3).\n")
 
         match_score    = prompt_int("Enter the match score: ")
         mismatch_score = prompt_int("Enter the mismatch score: ")
@@ -37,4 +38,4 @@ def get_scoring_parameters() -> Tuple[int, int, int]:
 
 if __name__ == "__main__":
     tets_1 = get_scoring_parameters()
-    print(tets_1)
+    sys.stdout.write(str(tets_1) + "\n")

@@ -18,6 +18,7 @@ python main.py -i ACGT -j AGGT -m 2 -n -1 -g -2 -o report.pdf
 
 import argparse
 import shutil
+import sys
 from pathlib import Path
 
 from modules.input_lib.input import input_sequences
@@ -174,10 +175,10 @@ if __name__ == "__main__":
 	try:
 		CreateAlignment.main()
 	except (ValueError, TypeError, AttributeError, IndexError, OSError, RuntimeError) as e:
-		print(f"Error: {e}")
+		sys.stdout.write(f"Error: {e}\n")
 		raise SystemExit(1)
 	except Exception as e:
-		print(f"Unexpected error: {e}")
+		sys.stdout.write(f"Unexpected error: {e}\n")
 		raise SystemExit(1)
 	finally:
 		# Remove temporary cache folders whether the run succeeded or failed

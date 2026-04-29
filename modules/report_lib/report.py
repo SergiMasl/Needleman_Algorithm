@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -301,5 +302,5 @@ def report(
 			if f is not None:
 				plt.close(f)
 
-	print(f"Report saved to: {output_path}")
+	sys.stdout.write(f"Report saved to: {output_path}\n")
 	return output_path
