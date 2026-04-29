@@ -29,7 +29,7 @@ class SequenceInput:
     label_b: str
 
 
-def parse_fasta_file(file: str):
+def parse_fasta_file(file: str) -> Tuple[str, str]:
     """
     Opens a FASTA file and reads the first DNA sequence inside it.
     Returns (label, sequence) or False if something goes wrong.
@@ -83,7 +83,7 @@ def parse_fasta_file(file: str):
     return label, sequence
 
 
-def read_two_fastas(file1: str, file2: str):
+def read_two_fastas(file1: str, file2: str)-> Tuple[str, str, str, str]:
     """
     Reads two separate FASTA files and returns both sequences and their labels.
     Calls parse_fasta_file() on each file individually, and calls it twice. 
@@ -154,7 +154,7 @@ def build_sequence_input(raw_a: str, raw_b: str, label_a: str, label_b: str) -> 
     return SequenceInput(seq_a=seq_a, seq_b=seq_b, label_a=label_a, label_b=label_b)
 
 
-def input_sequences(args):
+def input_sequences(args: argparse.NameSpace)-> SequenceInput:
     """
     Asks the user whether to load sequences from a FASTA file or type them manually.
     Returns a SequenceInput object, or exits on error.
