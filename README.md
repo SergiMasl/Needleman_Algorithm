@@ -94,7 +94,15 @@ The scoring matrix and traceback alignment are printed to the terminal during th
 
 # Command Line Interface Options
 
-A command line interface (CLI) has been added to `main.py` for optimal handling of input arguments. The CLI information is listed below:
+For default parameters, input into command line: 
+```bash
+python main.py
+```
+A prompt will appear asking if user wants to keep default parameters or not. 
+
+
+
+For non-default parameters, A command line interface (CLI) has been added to `main.py` for optimal handling of input arguments if the user chooses to. The CLI information is listed below:
 
 | Flag | Long Form | Default | Description |
 |------|-----------|---------|-------------|
@@ -106,7 +114,7 @@ A command line interface (CLI) has been added to `main.py` for optimal handling 
 | `-g` | `--gapscore` | `-2` | Gap score parameter in the case that there is a gap in one sequence or both sequences |
 | `-o` | `--outputpdf` | timestamp | Output file argument, formatted as a `.pdf` for easy accessibility, printing, and documentation |
 
-### Example Usage
+### Example Usage for Customized Parameters
 ```bash
 python main.py --match 2 --mismatch -1 --gapscore -2 --outputpdf my_alignment.pdf
 ```
