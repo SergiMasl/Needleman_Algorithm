@@ -2,11 +2,11 @@ Sergey
 
 - check and biuld all loops
 
-* add anotations for parsing
+- add anotations for parsing
 
-- final update of work flow and time report
+* final update of work flow and time report
 
-* create error handle report
+- create error handle report
 
 Em
 

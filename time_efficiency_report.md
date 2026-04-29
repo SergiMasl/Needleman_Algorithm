@@ -4,18 +4,26 @@
 
 | Module | Operation | Complexity |
 |---|---|---|
-| `parsing.py` | Matrix fill (NW recurrence) | O(m × n) |
-| `scrolling_output.py` | Traceback | O(m + n) |
-| `scrolling_output.py` | Consensus build | O(m + n) |
-| `report.py` | PDF render | O(m × n) — matplotlib table scales with matrix size |
+| `validation.py` | DNA character validation | O(n) — single pass over sequence |
+| `input.py` | FASTA file read | O(n) — line-by-line read |
+| `parsing.py` | Matrix allocation + border init | O(m × n) allocation, O(m + n) border fill |
+| `parsing.py` | Diagonal score precomputation | O(m × n) — broadcasting over full matrix |
+| `parsing.py` | NW matrix fill (inner loop) | O(m × n) |
+| `scrolling_output.py` | `find_ties` — tie detection scan | O(m + n) — single traceback scan |
+| `scrolling_output.py` | `view_traceback` — primary alignment | O(m + n) |
+| `scrolling_output.py` | `tie_traceback` — alternate alignment | O(m + n) — only when a tie exists |
+| `scrolling_output.py` | `build_consensus` | O(m + n) — one pass over aligned sequences |
+| `report.py` | `_gc_content` | O(n) per sequence |
+| `report.py` | PDF render (matrix table) | O(m × n) — matplotlib table scales with matrix size |
+| `report.py` | PDF render (alt traceback page) | O(m × n) — only rendered when a tie exists |
 
 Where `m` = length of seq_a, `n` = length of seq_b.
 
 ---
 
-## Optimizations Applied (2026-04-02, updated 2026-04-16)
+## Optimizations Applied
 
-### 1. Removed Duplicate Matrix Fill
+### 1. Removed Duplicate Matrix Fill (2026-04-02)
 
 **Before:** `parsing.py` filled the NW matrix with a Python double loop, then called `GridBuild.matrix_construct()` which ran the exact same double loop a second time.
 
@@ -25,7 +33,7 @@ Where `m` = length of seq_a, `n` = length of seq_b.
 
 ---
 
-### 2. NumPy Border Initialization
+### 2. NumPy Border Initialization (2026-04-02)
 
 **Before:**
 ```python
@@ -45,7 +53,7 @@ matrix[0, 1:] = np.arange(1, cols) * gap_penalty
 
 ---
 
-### 3. Precomputed Diagonal Score Matrix
+### 3. Precomputed Diagonal Score Array (2026-04-02)
 
 **Before:** Every cell in the inner loop did a Python character comparison:
 ```python
@@ -55,31 +63,36 @@ else:
     diagonal = matrix[i-1][j-1] + mismatch_score
 ```
 
-**After:** All match/mismatch scores computed once before the loop using NumPy broadcasting:
+**After:** Sequences are encoded to byte arrays and a score matrix is computed once before the loop:
 ```python
 seq_b_arr = np.frombuffer(seq_b.encode(), dtype=np.uint8)
 seq_a_arr = np.frombuffer(seq_a.encode(), dtype=np.uint8)
-diag_scores = np.where(seq_b_arr[:, None] == seq_a_arr[None, :], match_score, mismatch_score)
+char_score = np.vectorize(lambda b, a: match_score if b == a else mismatch_score)
+diag_scores = char_score(seq_b_arr[:, None], seq_a_arr[None, :])
 ```
 
-Inside the loop, each cell just does an array lookup:
+Inside the loop, each cell does an array lookup instead of a character comparison:
 ```python
 diagonal = matrix[i - 1, j - 1] + diag_scores[i - 1, j - 1]
 ```
 
-**Impact:** Removes one Python conditional branch per cell — for a 1000×1000 matrix that is 1,000,000 fewer Python-level comparisons.
+**Impact:** Eliminates the Python conditional branch from the hot inner loop. For a 1000×1000 matrix, that is 1,000,000 fewer Python-level comparisons during fill.
+
+**Known limitation:** `np.vectorize` is documented as a convenience wrapper, not a performance tool — it still calls the lambda once per element in Python. The precomputation step itself is not fully vectorized. Replacing `np.vectorize` with `np.where` would make the precomputation a true C-level operation:
+```python
+# More efficient alternative (not yet applied):
+diag_scores = np.where(
+    seq_b_arr[:, None] == seq_a_arr[None, :],
+    match_score,
+    mismatch_score
+)
+```
 
 ---
 
 ### 4. Numba JIT on `matrix_build` (2026-04-16)
 
-**Change:** Added `@njit` decorator from `numba` to `matrix_build()` in `scrolling_output.py`. The function was also refactored to self-initialize the matrix (allocates `np.zeros`, fills borders) entirely inside the JIT-compiled function rather than relying on the caller.
-
-**Before:**
-```python
-def matrix_build(self, seq_a, seq_b, gap):
-    ...
-```
+**Change:** Added `@njit` decorator from `numba` to `matrix_build()` in `scrolling_output.py`. The function allocates `np.zeros`, fills both borders, and returns the matrix entirely inside the JIT-compiled function.
 
 **After:**
 ```python
@@ -95,23 +108,60 @@ def matrix_build(seq_a, seq_b, gap):
     return matrix
 ```
 
-**Impact:** Matrix initialization now runs as compiled machine code via LLVM. First invocation incurs a one-time JIT compilation cost; all subsequent calls are significantly faster. This also consolidates allocation and border-fill into a single compiled pass.
+**Impact:** Matrix initialization now runs as compiled machine code via LLVM. First invocation incurs a one-time JIT compilation cost; all subsequent calls are significantly faster. Allocation and border-fill are consolidated into a single compiled pass.
 
 **Note:** The first run of the program will be slower than usual due to Numba's ahead-of-time compilation step. Subsequent runs use the cached compiled version.
 
 ---
 
-## Remaining Bottleneck
+### 5. `deque` for Traceback Sequence Building (2026-04-12)
 
-The `view_traceback()` inner loop is still a pure Python `for` loop. Full vectorization of the NW traceback is not straightforward because each step depends on the current cell's neighbors (sequential data dependency).
+**Change:** `view_traceback()` and `tie_traceback()` in `scrolling_output.py` use `collections.deque` for `seq_align_a` and `seq_align_b` instead of plain lists.
 
-For sequences longer than ~2,000 bases, this loop will remain the dominant cost. Options if further optimization is needed:
+**Impact:** `deque.appendleft()` is O(1). The equivalent on a plain list — `list.insert(0, x)` — is O(n) because it shifts every existing element. For a traceback of length L, this reduces sequence-building from O(L²) to O(L).
+
+---
+
+## New Functionality — Performance Notes (2026-04-12)
+
+### Tie Detection and Alternate Traceback
+
+Two additional O(m + n) passes are now performed when an alternate optimal alignment exists:
+
+- **`find_ties()`** — scans from the bottom-right corner to the top-left, looking for the first cell where more than one optimal move is valid. Returns `(row, col)` of the tie point or `None`.
+- **`tie_traceback()`** — if a tie is found, traces the alternate alignment path from the tie point, resolving the branch differently from the primary path.
+
+When a tie is present, `report.py` also generates a third PDF page with the alternate traceback highlighted. This adds a full second O(m × n) matplotlib table render to the reporting step.
+
+**Net cost of tie handling:** Two extra O(m + n) passes and one extra O(m × n) PDF render, incurred only when at least one tie cell exists in the matrix.
+
+---
+
+## Remaining Bottlenecks
+
+### NW Inner Fill Loop
+
+The matrix fill in `parsing.py` is still a pure Python `for` loop over rows and columns. Each cell's `max(diagonal, up, left)` depends on cells immediately above and to the left — a sequential data dependency that prevents straightforward vectorization of the fill step itself.
+
+For sequences longer than ~2,000 bases, this double loop is the dominant cost.
+
+### Diagonal Score Precomputation
+
+As noted in Optimization #3, `np.vectorize` does not provide true vectorization. For large sequences, replacing it with `np.where` would give a meaningful speedup on the precomputation step at no cost.
+
+---
+
+## Optimization Roadmap
 
 | Approach | Benefit | Cost | Status |
 |---|---|---|---|
-| `numba` JIT (`@njit`) on `matrix_build` | Fast matrix init | One-time compile cost | **Implemented (2026-04-16)** |
-| `@njit` on `view_traceback` | 10–100× speedup on traceback | Requires rewriting deque logic with plain arrays | Not yet applied |
-| Anti-diagonal vectorization (NW fill) | Full NumPy, no new deps | Complex to implement | Not applied |
+| NumPy border init | Fast O(m+n) border fill | — | **Implemented** |
+| Precomputed diagonal scores (vectorize) | Removes branch from inner loop | Precompute step is still slow | **Implemented** |
+| `deque` for traceback building | O(L) vs O(L²) sequence assembly | — | **Implemented** |
+| Numba JIT on `matrix_build` | Fast matrix init | One-time compile cost | **Implemented (2026-04-16)** |
+| Replace `np.vectorize` → `np.where` | True vectorization of precompute | Trivial change | **Not yet applied** |
+| `@njit` on `view_traceback` | 10–100× speedup on traceback | Requires rewriting `deque` logic with plain arrays | Not yet applied |
+| Anti-diagonal vectorization (NW fill) | Fully vectorized matrix fill | Complex to implement; requires restructuring fill loop | Not applied |
 | `Biopython` pairwise aligner | Highly optimized C backend | Major dependency, replaces core logic | Not applied |
 
 ---
@@ -122,6 +172,7 @@ For sequences longer than ~2,000 bases, this loop will remain the dominant cost.
 |---|---|
 | Remove duplicate matrix fill | ~2× |
 | NumPy border init | Minor |
-| Precomputed diagonal scores | Moderate (scales with sequence length) |
-| Numba JIT on `matrix_build` | Significant for init; negligible vs. traceback loop |
-| **Total** | **~2–3× over original (traceback loop remains the bottleneck)** |
+| Precomputed diagonal scores | Moderate for fill; precompute step itself still O(m×n) via `np.vectorize` |
+| `deque` in traceback | Significant for long sequences (O(L) vs O(L²)) |
+| Numba JIT on `matrix_build` | Significant for init; minor vs. fill loop cost |
+| **Total** | **~2–3× over original — fill loop and `np.vectorize` precompute remain the primary bottlenecks** |
