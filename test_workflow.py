@@ -96,7 +96,7 @@ else:
 
 if fasta_input:
     try:
-        m2, sa2, sb2, match2, mm2, gap2, tie2 = parsing(fasta_input, MATCH, MISMATCH, GAP)
+        m2, _, _, _, _, _, tie2 = parsing(fasta_input, MATCH, MISMATCH, GAP)
         sys.stdout.write(f"Parsing:    PASS -> shape={m2.shape}, "
               f"bottom-right={int(m2[-1, -1])}, tie_point={tie2}\n")
     except Exception as e:

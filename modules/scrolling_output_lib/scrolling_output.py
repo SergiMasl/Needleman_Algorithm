@@ -3,17 +3,10 @@
 #escott60@charlotte.edu
 #Em Scott
 
-import sys
 import numpy as np
 from typing import List, Tuple, Optional 
 from collections import deque
-from numba import njit 
-
-#IMPORTANT: The first running instance of this program will be slower due to Numba compiling data. 
-#After the initial slow run, the speed will be better optimized. 
-
 class GridBuild():
-	@njit
 	def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
 		"""
 		Purpose: Initialize a matrix with the sequences by utilizing NumPy, getting it ready for output.
@@ -122,15 +115,13 @@ class GridBuild():
 			current = matrix[i, j] #remain constant
 			diag = matrix[i - 1, j - 1] #move left and up
 			up = matrix[i - 1, j] #move up one row
-			left = matrix[i, j - 1] #move up one column
 
 			#Matches:
 			score_di = diag + (match if seq_b[i - 1] == seq_a[j - 1] else mismatch)
 
 			#Mismatches:
 			score_up = up + gap
-			score_left = left + gap
-		
+
 			if current == score_di: #move diagonally
 				seq_align_a.appendleft(seq_a[i - 1])
 				seq_align_b.appendleft(seq_b[j - 1])
@@ -326,7 +317,7 @@ class GridBuild():
 		Returns: List(s) containing the optimal sequence(s)
 		"""
 
-		def best_sequence(self, seq_align_a: str, seq_align_b: str) -> List[str]:
+		def best_sequence(seq_align_a: str, seq_align_b: str) -> List[str]:
 			"""
 			Purpose: Determines the consensus sequence from the alignment. 
 
@@ -352,8 +343,8 @@ class GridBuild():
 					consensus_seq.append("N")
 			return consensus_seq 
 
-		first = build_consensus(seq_align_a, seq_align_b)
-		alt = build_consensus(alt_a, alt_b) if alt_a and alt_b else None
+		first = best_sequence(seq_align_a, seq_align_b)
+		alt = best_sequence(alt_a, alt_b) if alt_a and alt_b else None
 
 		return first, alt
 
