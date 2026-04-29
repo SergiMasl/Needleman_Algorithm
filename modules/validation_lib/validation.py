@@ -83,6 +83,66 @@ def validate_dna_sequence(seq: str | None, name: str = "sequence") -> str:
     return cleaned
 
 
+def validate_fasta_loadable(file_path: str):
+    """
+    Purpose:
+        Check that a FASTA file exists on disk and is not empty.
+        If either check fails, reports the specific problem with the file path,
+        then prompts the user to retry with a different file or exit.
+
+    Parameters:
+        file_path: Path provided by the user.
+
+    Returns:
+        True if the file exists and is non-empty.
+        False if the user chooses to retry (caller should re-prompt for a new file).
+        Calls sys.exit(1) if the user chooses to exit.
+
+    Example:
+        validate_fasta_loadable("seq1.fasta") -> True
+    """
+    import sys
+    import os
+    if not os.path.isfile(file_path):
+        sys.stderr.write(f"[Error] File not found: '{file_path}'\n")
+    elif os.path.getsize(file_path) == 0:
+        sys.stderr.write(f"[Error] File is empty: '{file_path}'\n")
+    else:
+        return True
+    retry = input("Re-enter the correct file path or exit? (retry/exit): ").strip().lower()
+    while retry not in ["retry", "exit"]:
+        retry = input("Please enter 'retry' or 'exit': ").strip().lower()
+    if retry == "exit":
+        sys.exit(1)
+    return False
+
+
+def validate_fasta_extension(file_path: str) -> bool:
+    """
+    Purpose:
+        Check that a file path ends with the .fasta extension.
+        If not, reports the error so the user can provide a correct file.
+
+    Parameters:
+        file_path: Path provided by the user.
+
+    Returns:
+        True if the extension is .fasta, False otherwise.
+
+    Example:
+        validate_fasta_extension("seq1.fasta") -> True
+        validate_fasta_extension("seq1.txt")   -> False
+    """
+    if not file_path.lower().endswith(".fasta"):
+        import sys
+        sys.stderr.write(
+            f"[Error] '{file_path}' is not a .fasta file. "
+            "Please provide a file with a .fasta extension.\n"
+        )
+        return False
+    return True
+
+
 def validate_fasta_dna(file_path: str, raw_seq: str, label: str):
     """
     Purpose:
@@ -114,6 +174,45 @@ def validate_fasta_dna(file_path: str, raw_seq: str, label: str):
         if retry == "exit":
             sys.exit(1)
         return False
+
+
+def validate_single_fasta_sequence(file_path: str):
+    """
+    Purpose:
+        Check that a FASTA file contains exactly one sequence (one '>' header).
+        If more than one header is found, reports the file and the count,
+        then prompts the user to retry with a different file or exit.
+
+    Parameters:
+        file_path: Path to the FASTA file to inspect.
+
+    Returns:
+        True if the file has exactly one sequence.
+        False if the user chooses to retry (caller should re-prompt for a new file).
+        Calls sys.exit(1) if the user chooses to exit.
+
+    Example:
+        validate_single_fasta_sequence("seq1.fasta") -> True
+    """
+    import sys
+    try:
+        with open(file_path, "r") as f:
+            header_count = sum(1 for line in f if line.startswith(">"))
+    except FileNotFoundError:
+        return True  # parse_fasta_file already handles missing files
+
+    if header_count > 1:
+        sys.stderr.write(
+            f"[Error] File '{file_path}' contains {header_count} sequences. "
+            "Only 1 sequence per file is allowed.\n"
+        )
+        retry = input("Re-enter the correct file path or exit? (retry/exit): ").strip().lower()
+        while retry not in ["retry", "exit"]:
+            retry = input("Please enter 'retry' or 'exit': ").strip().lower()
+        if retry == "exit":
+            sys.exit(1)
+        return False
+    return True
 
 
 def validate_int(value: object, name: str) -> int:
