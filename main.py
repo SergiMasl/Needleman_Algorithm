@@ -169,10 +169,17 @@ class CreateAlignment:
 			output_path=output_path,
 		)
 
-# Guard Function 
+# Guard Function
 if __name__ == "__main__":
-	CreateAlignment.main()
-
-	# Remove temporary cache folders
-	for cache_dir in Path(__file__).parent.rglob("__pycache__"):
-		shutil.rmtree(cache_dir)
+	try:
+		CreateAlignment.main()
+	except (ValueError, TypeError, AttributeError, IndexError, OSError, RuntimeError) as e:
+		print(f"Error: {e}")
+		raise SystemExit(1)
+	except Exception as e:
+		print(f"Unexpected error: {e}")
+		raise SystemExit(1)
+	finally:
+		# Remove temporary cache folders whether the run succeeded or failed
+		for cache_dir in Path(__file__).parent.rglob("__pycache__"):
+			shutil.rmtree(cache_dir)

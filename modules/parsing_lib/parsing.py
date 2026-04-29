@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from typing import Optional, Tuple
 import numpy as np
 from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
 from modules.scrolling_output_lib.scrolling_output import GridBuild
 
-def parsing(file_from_input, match_score=None, mismatch_score=None, gap_penalty=None):
+def parsing(
+    file_from_input,
+    match_score: Optional[int] = None,
+    mismatch_score: Optional[int] = None,
+    gap_penalty: Optional[int] = None,
+) -> Tuple[np.ndarray, str, str, int, int, int, Optional[Tuple[int, int]]]:
 	"""
 	 -this function will take one array which contain 2 seqs arrays
 	 - step 1: ask user asking user for match score, mismatch score, and gap penalty

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-def get_scoring_parameters():
+from typing import Tuple
+
+def get_scoring_parameters() -> Tuple[int, int, int]:
     """
         Purpose: Gets the scoring parameters for the matrix from the user input
         Input: User input for match score, mismatch score, and gap penalty
