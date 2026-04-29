@@ -85,9 +85,15 @@ def parsing(
 	except ValueError as e:
 		raise ValueError(f"Could not allocate scoring matrix ({rows}x{cols}): {e}")
 
-	# initialize borders with numpy slicing instead of loops
-	matrix[1:, 0] = np.arange(1, rows) * gap_penalty
-	matrix[0, 1:] = np.arange(1, cols) * gap_penalty
+	# lambdas for the three scoring operations used in the NW recurrence
+	gap_score  = lambda val: val + gap_penalty
+	char_score = np.vectorize(lambda b, a: match_score if b == a else mismatch_score)
+	cell_score = lambda d, u, l: max(d, u, l)
+
+	# initialize borders: each border cell = its index * gap_penalty
+	gap_init       = lambda n: np.arange(1, n) * gap_penalty
+	matrix[1:, 0]  = gap_init(rows)
+	matrix[0, 1:]  = gap_init(cols)
 
 	# precompute match/mismatch scores for every (i,j) pair at once
 	try:
@@ -96,15 +102,15 @@ def parsing(
 	except (UnicodeEncodeError, AttributeError) as e:
 		raise ValueError(f"Sequences must be ASCII strings: {e}")
 
-	diag_scores = np.where(seq_b_arr[:, None] == seq_a_arr[None, :], match_score, mismatch_score)
+	diag_scores = char_score(seq_b_arr[:, None], seq_a_arr[None, :])
 
 	# fill matrix — single pass, no character comparison inside the loop
 	for i in range(1, rows):
 		for j in range(1, cols):
-			diagonal = matrix[i - 1, j - 1] + diag_scores[i - 1, j - 1]
-			up       = matrix[i - 1, j] + gap_penalty
-			left     = matrix[i, j - 1] + gap_penalty
-			matrix[i, j] = max(diagonal, up, left)
+			diagonal    = matrix[i - 1, j - 1] + diag_scores[i - 1, j - 1]
+			up          = gap_score(matrix[i - 1, j])
+			left        = gap_score(matrix[i, j - 1])
+			matrix[i, j] = cell_score(diagonal, up, left)
 
 	try:
 		grid = GridBuild()

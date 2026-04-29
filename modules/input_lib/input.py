@@ -10,7 +10,9 @@ Returns False on any error for next module to handle.
 """
 
 import sys
+import argparse
 from dataclasses import dataclass
+from typing import Tuple
 from modules.validation_lib.validation import validate_dna_sequence, validate_fasta_dna, validate_single_fasta_sequence, validate_fasta_extension, validate_fasta_loadable
 
 
@@ -154,7 +156,7 @@ def build_sequence_input(raw_a: str, raw_b: str, label_a: str, label_b: str) -> 
     return SequenceInput(seq_a=seq_a, seq_b=seq_b, label_a=label_a, label_b=label_b)
 
 
-def input_sequences(args: argparse.NameSpace)-> SequenceInput:
+def input_sequences(args: argparse.Namespace)-> SequenceInput:
     """
     Asks the user whether to load sequences from a FASTA file or type them manually.
     Returns a SequenceInput object, or exits on error.
