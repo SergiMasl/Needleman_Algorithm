@@ -11,7 +11,7 @@ Returns False on any error for next module to handle.
 
 import sys
 from dataclasses import dataclass
-from modules.validation_lib.validation import validate_dna_sequence, validate_fasta_dna
+from modules.validation_lib.validation import validate_dna_sequence, validate_fasta_dna, validate_single_fasta_sequence, validate_fasta_extension, validate_fasta_loadable
 
 
 @dataclass
@@ -168,13 +168,12 @@ def input_sequences(args: argparse.NameSpace)-> SequenceInput:
     if choice.lower() == "fasta":
         while True:
             file_path_a = input("Enter full path to first FASTA file: ").strip()
+            if not validate_fasta_extension(file_path_a):
+                continue
+            if not validate_fasta_loadable(file_path_a):
+                continue
             parsed_a = parse_fasta_file(file_path_a)
-            if parsed_a is False:
-                retry = input("File not found or empty. Try again or exit? (retry/exit): ").strip().lower()
-                while retry not in ["retry", "exit"]:
-                    retry = input("Please enter 'retry' or 'exit': ").strip().lower()
-                if retry == "exit":
-                    sys.exit(1)
+            if not validate_single_fasta_sequence(file_path_a):
                 continue
             label_a, raw_a = parsed_a
             seq_a = validate_fasta_dna(file_path_a, raw_a, label_a)
@@ -183,13 +182,12 @@ def input_sequences(args: argparse.NameSpace)-> SequenceInput:
 
         while True:
             file_path_b = input("Enter full path to second FASTA file: ").strip()
+            if not validate_fasta_extension(file_path_b):
+                continue
+            if not validate_fasta_loadable(file_path_b):
+                continue
             parsed_b = parse_fasta_file(file_path_b)
-            if parsed_b is False:
-                retry = input("File not found or empty. Try again or exit? (retry/exit): ").strip().lower()
-                while retry not in ["retry", "exit"]:
-                    retry = input("Please enter 'retry' or 'exit': ").strip().lower()
-                if retry == "exit":
-                    sys.exit(1)
+            if not validate_single_fasta_sequence(file_path_b):
                 continue
             label_b, raw_b = parsed_b
             seq_b = validate_fasta_dna(file_path_b, raw_b, label_b)
