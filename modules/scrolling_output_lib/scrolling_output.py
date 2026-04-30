@@ -6,7 +6,20 @@
 import numpy as np
 from typing import List, Tuple, Optional 
 from collections import deque
+from numba import njit
+
+@njit
 class GridBuild():
+
+	def _build_matrix(rows: int, cols: int, gap: int) -> np.ndarray:
+	    matrix = np.zeros((rows, cols), dtype=np.int32)
+	    #The leftmost column is used for initializing all rows
+	    matrix[:, 0] = np.arange(rows) * gap
+	    #The top row is reserved for initializing all columns
+	    matrix[0, :] = np.arange(cols) * gap
+	    return matrix
+
+
 	def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
 		"""
 		Purpose: Initialize a matrix with the sequences by utilizing NumPy, getting it ready for output.
@@ -20,18 +33,8 @@ class GridBuild():
 		
 		Returns: Returns the NumPy array, consisting of the sequence dimensions. 
 		"""
-		rows = len(seq_a) + 1
-		cols = len(seq_b) + 1
-		matrix = np.zeros((rows, cols), dtype=np.int32)
-
-		#The leftmost column is used for initializing all rows
-		matrix[:, 0] = np.arange(rows) * gap
-
-		#The top row is reserved for initializing all columns
-		matrix[0, :] = np.arange(cols) * gap
-
-		return matrix
-
+		return _build_matrix(len(seq_a) + 1, len(seq_b) + 1, gap)
+    
 
 	def matrix_construct(
 		self, 
@@ -139,7 +142,7 @@ class GridBuild():
 		# Check for a tie and generate an alt if the tie is found
 		tie_point = self.find_ties(matrix, seq_a, seq_b, match, mismatch, gap)
 		if tie_point:
-			alt_a, alt_b = self.view_traceback(matrix, seq_a, seq_b, match, mismatch, gap, tie_point)
+			alt_a, alt_b = self.tie_traceback(matrix, seq_a, seq_b, match, mismatch, gap, tie_point)
 			return (seq_align_a, seq_align_b), (alt_a, alt_b)
 
 		return (seq_align_a, seq_align_b), None 
