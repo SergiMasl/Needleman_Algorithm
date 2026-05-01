@@ -22,6 +22,7 @@ from pathlib import Path
 
 from modules.input_lib.input import input_sequences
 from modules.parsing_lib.parsing import parsing
+from modules.scrolling_output_lib.scrolling_output import GridBuild
 from modules.report_lib.report import report, default_report_name
 
 
@@ -145,6 +146,21 @@ class CreateAlignment:
 			mismatch_score,
 			gap_penalty,
 		)
+
+		grid = GridBuild()
+		(seq_align_a, seq_align_b), alt = grid.view_traceback(
+		    matrix, seq_a, seq_b, match_score, mismatch_score, gap_penalty
+		)
+		alt_a, alt_b = alt if alt else (None, None)
+		consensus, alt_consensus = grid.build_consensus(seq_align_a, seq_align_b, alt_a, alt_b)
+		sys.stdout.write(f"Aligned A:  {''.join(seq_align_a)}\n")
+		sys.stdout.write(f"Aligned B:  {''.join(seq_align_b)}\n")
+		sys.stdout.write(f"Consensus:  {''.join(consensus)}\n")
+		if alt_a and alt_b:
+		    sys.stdout.write(f"Alt A: {''.join(alt_a)}\n")
+		    sys.stdout.write(f"Alt B: {''.join(alt_b)}\n")
+		if alt_consensus:
+		    sys.stdout.write(f"Alt Consensus: {''.join(alt_consensus)}\n")
 
 		# Output report name
 		report_name = args.outputpdf

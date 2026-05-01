@@ -243,6 +243,37 @@ class GridBuild():
 		i, j = tie_point
 		alt_a = deque()
 		alt_b = deque()
+		
+		row = matrix.shape[0] - 1
+		col = matrix.shape[1] - 1
+
+		while (row, col) != (i, j):
+			if row == 0:
+				alt_a.appendleft(seq_a[col - 1])
+				alt_b.appendleft("-")
+				col -= 1
+			elif col == 0:
+				alt_a.appendleft("-")
+				alt_b.appendleft(seq_b[row - 1])
+				row -= 1
+			else:
+				score = matrix[row-1][col-1] + (match if seq_b[row-1] == seq_a[col-1] else mismatch)
+				up = matrix[row-1][col] + gap
+				left = matrix[row][col-1] + gap
+				current = matrix[row][col]
+				if current == score:
+					alt_a.appendleft(seq_a[col - 1])
+					alt_b.appendleft(seq_b[row - 1])
+					row -= 1
+					col -= 1
+				elif current == up:
+					alt_a.appendleft("-")
+					alt_b.appendleft(seq_b[row - 1])
+					row -= 1
+				else:
+					alt_a.appendleft(seq_a[col - 1])
+					alt_b.appendleft("-")
+					col -= 1
 
 		current = matrix[i, j]
 		diag = matrix[i-1, j-1]
