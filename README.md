@@ -217,3 +217,20 @@ GeeksforGeeks. (2017, July 15). numpy.arange() in Python. GeeksforGeeks. https:/
 GeeksforGeeks. (2025, February 6). Deque vs List in Python. GeeksforGeeks. https://www.geeksforgeeks.org/python/deque-vs-list-in-python/
 
 Python Optional Argument. (2026). Mimo.org. https://mimo.org/glossary/python/optional-arguments
+
+
+## AI Citation and Prompts: 
+
+Claude.ai is cited for debugging help in the case of syntax and runtime errors. Prompts are listed below:
+
+Anthropic. (2025). Claude. Claude.ai. https://claude.ai/
+
+# Prompts:
+
+-What is the best way to make sure I am using numba and calling on @njit in my script?
+
+-With Needleman-Wunsch tie options, what methodology do I need to apply to Python to traceback a noticeably different alignment? 
+
+-Double-checking the alignment logic and found an error in tie_traceback with rows and columns (i, j). 
+
+-Do I need to call @staticmethod after adding Numba and calling @njit outside of my class script? 
