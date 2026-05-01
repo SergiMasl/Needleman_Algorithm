@@ -8,16 +8,16 @@ from typing import List, Tuple, Optional
 from collections import deque
 from numba import njit
 
-@njit
-class GridBuild():
 
+class GridBuild():
+	@njit
 	def _build_matrix(rows: int, cols: int, gap: int) -> np.ndarray:
-	    matrix = np.zeros((rows, cols), dtype=np.int32)
-	    #The leftmost column is used for initializing all rows
-	    matrix[:, 0] = np.arange(rows) * gap
-	    #The top row is reserved for initializing all columns
-	    matrix[0, :] = np.arange(cols) * gap
-	    return matrix
+		matrix = np.zeros((rows, cols), dtype=np.int32)
+		#The leftmost column is used for initializing all rows
+		matrix[:, 0] = np.arange(rows) * gap
+		#The top row is reserved for initializing all columns
+		matrix[0, :] = np.arange(cols) * gap
+		return matrix
 
 
 	def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
@@ -34,7 +34,7 @@ class GridBuild():
 		Returns: Returns the NumPy array, consisting of the sequence dimensions. 
 		"""
 		return _build_matrix(len(seq_a) + 1, len(seq_b) + 1, gap)
-    
+	
 
 	def matrix_construct(
 		self, 
@@ -104,39 +104,41 @@ class GridBuild():
 		#In the case that Sequence A (i) has no more nucleotides remaining
 		while i > 0 or j > 0:
 			if i == 0:
-				seq_align_a.appendleft("-")
-				seq_align_b.appendleft(seq_b[j - 1])
+				seq_align_a.appendleft(seq_a[j - 1])
+				seq_align_b.appendleft("-")
 				j -= 1
 				continue
 		#In the case that Sequence B (j) has no more nucleotides remaining
 			if j == 0:
-				seq_align_a.appendleft(seq_a[i - 1])
-				seq_align_b.appendleft("-")
+				seq_align_a.appendleft("-")
+				seq_align_b.appendleft(seq_b[i - 1])
 				i -= 1
 				continue
 
 			current = matrix[i, j] #remain constant
-			diag = matrix[i - 1, j - 1] #move left and up
-			up = matrix[i - 1, j] #move up one row
+			diag = matrix[i-1, j-1] #move left and up
+			up = matrix[i-1, j] #move up one row
+			left = matrix[i, j-1] #move up one column
 
 			#Matches:
-			score_di = diag + (match if seq_a[i - 1] == seq_b[j - 1] else mismatch)
+			score_di = diag + (match if seq_b[i - 1] == seq_a[j - 1] else mismatch)
 
 			#Mismatches:
 			score_up = up + gap
+			score_left = left + gap
 
 			if current == score_di: #move diagonally
-				seq_align_a.appendleft(seq_a[i - 1])
-				seq_align_b.appendleft(seq_b[j - 1])
+				seq_align_a.appendleft(seq_a[j - 1])
+				seq_align_b.appendleft(seq_b[i - 1])
 				i -= 1
 				j -= 1
 			elif current == score_up: #move up
-				seq_align_a.appendleft(seq_a[i - 1])
-				seq_align_b.appendleft("-")
+				seq_align_a.appendleft("-")
+				seq_align_b.appendleft(seq_b[i - 1])
 				i -= 1
 			else: #move left:
-				seq_align_a.appendleft("-")
-				seq_align_b.appendleft(seq_b[j - 1])
+				seq_align_a.appendleft(seq_a[j - 1])
+				seq_align_b.appendleft("-")
 				j -= 1
 
 		# Check for a tie and generate an alt if the tie is found
@@ -196,8 +198,11 @@ class GridBuild():
 			#Check how many optimal paths can be found to get to the current cell
 			valid = [k for k, v in {"diag": score_di, "up": score_up, "left": score_left}.items() if v == current]
 
-			if len(valid) > 1:
-				return (i, j)  #get only the first tie
+			min_i = matrix.shape[0] // 2
+			min_j = matrix.shape[1] // 2
+
+			if len(valid) > 1 and i <= min_i and j <= min_j:
+				return (i, j)
 
 			if current == score_di: #move diagonally
 				i -= 1
@@ -244,33 +249,33 @@ class GridBuild():
 		up = matrix[i-1, j]
 		left = matrix[i, j-1]
 
-		score_di = diag + (match if seq_a[i-1] == seq_b[j-1] else mismatch)
+		score_di = diag + (match if seq_b[i-1] == seq_a[j-1] else mismatch)
 		score_up = up + gap
 		score_left = left + gap
 
 		if current == score_di and current == score_up:
 			#Tie between diag and up, go up
-			alt_a.appendleft(seq_a[i - 1])
-			alt_b.appendleft("-")
+			alt_a.appendleft("-")
+			alt_b.appendleft(seq_b[i - 1])
 			i -= 1
 		elif current == score_di and current == score_left:
-			alt_a.appendleft("-")
-			alt_b.appendleft(seq_b[j - 1])
+			alt_a.appendleft(seq_a[j - 1])
+			alt_b.appendleft("-")
 			j -= 1
 		else:
-			alt_a.appendleft("-")
-			alt_b.appendleft(seq_b[j - 1])
+			alt_a.appendleft(seq_a[j - 1])
+			alt_b.appendleft("-")
 			j -= 1
 
 		while i > 0 or j > 0:
 			if i == 0:
-				alt_a.appendleft("-")
-				alt_b.appendleft(seq_b[j-1])
+				alt_a.appendleft(seq_a[j-1])
+				alt_b.appendleft("-")
 				j -= 1
 				continue
 			if j == 0:
-				alt_a.appendleft(seq_a[i-1])
-				alt_b.appendleft("-")
+				alt_a.appendleft("-") 
+				alt_b.appendleft(seq_b[i-1])
 				i -= 1
 				continue
 
@@ -279,22 +284,22 @@ class GridBuild():
 			up = matrix[i-1, j]
 			left = matrix[i, j-1]
 
-			score_di = diag + (match if seq_a[i-1] == seq_b[j-1] else mismatch)
+			score_di = diag + (match if seq_b[i-1] == seq_a[j-1] else mismatch)
 			score_up = up + gap
 			score_left = left + gap
 
 			if current == score_di:  
-				alt_a.appendleft(seq_a[i - 1])
-				alt_b.appendleft(seq_b[j - 1])
+				alt_a.appendleft(seq_a[j - 1])
+				alt_b.appendleft(seq_b[i - 1])
 				i -= 1
 				j -= 1
 			elif current == score_up: 
-				alt_a.appendleft(seq_a[i - 1])
-				alt_b.appendleft("-")
+				alt_a.appendleft("-")
+				alt_b.appendleft(seq_b[i - 1])
 				i -= 1
 			else: 
-				alt_a.appendleft("-")
-				alt_b.appendleft(seq_b[j - 1])
+				alt_a.appendleft(seq_a[j - 1])
+				alt_b.appendleft("-")
 				j -= 1
 
 		return alt_a, alt_b

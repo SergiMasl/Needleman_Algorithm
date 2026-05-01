@@ -60,47 +60,40 @@ def traceback_graphing(
 			)
 
 	path = set()
-	i, j = tie_point if tie_point else (matrix.shape[0] - 1, matrix.shape[1] - 1)
-	path.add((matrix.shape[0] - 1, matrix.shape[1] - 1))  # keeps the bottom-right cell
-
-	if tie_point:
-		score = match if seq_b[i-1].upper() == seq_a[j-1].upper() else mismatch
-		diag  = matrix[i-1][j-1] + score
-		up    = matrix[i-1][j] + gap
-		left  = matrix[i][j-1] + gap
-		current = matrix[i][j]
-		path.add((i, j))
-
-		if current == diag and current == up:
-			i -= 1  # take up instead of diag
-		elif current == diag and current == left:
-			j -= 1  # take left instead of diag
-		else:
-			j -= 1  # take left instead of up
+	i = matrix.shape[0] - 1
+	j = matrix.shape[1] - 1
 
 	while i > 0 or j > 0:
 		path.add((i, j))
-
 		if i == 0:
 			j -= 1
 		elif j == 0:
 			i -= 1
 		else:
-			score = match if seq_b[i - 1].upper() == seq_a[j - 1].upper() else mismatch
-			diag  = matrix[i - 1][j - 1] + score
-			up    = matrix[i - 1][j] + gap
-			left  = matrix[i][j - 1] + gap
-
+			score   = match if seq_b[i-1].upper() == seq_a[j-1].upper() else mismatch
+			diag    = matrix[i-1][j-1] + score
+			up      = matrix[i-1][j] + gap
+			left    = matrix[i][j-1] + gap
 			current = matrix[i][j]
-			if current == diag:
-				i -= 1
-				j -= 1
-			elif current == up:
-				i -= 1
-			else:
-				j -= 1
 
-	path.add((0, 0))  # include the origin cell
+			# At the tie point, take the alternate direction
+			if tie_point and (i, j) == tie_point:
+				if current == diag and current == up:
+					i -= 1  # take up instead of diag
+				elif current == diag and current == left:
+					j -= 1  # take left instead of diag
+				else:
+					j -= 1
+			else:
+				if current == diag:
+					i -= 1
+					j -= 1
+				elif current == up:
+					i -= 1
+				else:
+					j -= 1
+
+	path.add((0, 0))
 	return path
 
 
@@ -178,7 +171,7 @@ def report(
 	fig = fig2 = fig3 = None
 	try:
 		fig, ax = plt.subplots(figsize=(max(8, len(seq_a) * 0.6),
-									    max(4, len(seq_b) * 0.4)))
+										max(4, len(seq_b) * 0.4)))
 		ax.axis("off")
 
 		table = ax.table(
