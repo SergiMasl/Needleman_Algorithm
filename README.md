@@ -234,3 +234,5 @@ Anthropic. (2025). Claude. Claude.ai. https://claude.ai/
 -Double-checking the alignment logic and found an error in tie_traceback with rows and columns (i, j). 
 
 -Do I need to call @staticmethod after adding Numba and calling @njit outside of my class script? 
+
+-Format and explain corrections for the report docstrings:
