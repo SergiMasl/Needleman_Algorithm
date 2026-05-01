@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import csv
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -95,6 +96,97 @@ def traceback_graphing(
 
 	path.add((0, 0))
 	return path
+
+
+def write_csv(
+    matrix: np.ndarray,
+    seq_a: str,
+    seq_b: str,
+    match: int,
+    mismatch: int,
+    gap: int,
+    seq_align_a,
+    seq_align_b,
+    consensus,
+    alt_a=None,
+    alt_b=None,
+    alt_consensus=None,
+    output_path: Optional[str] = None,
+) -> str:
+    """
+    Purpose: Write a CSV report of the NW alignment for reproducibility (FAIR).
+
+    Parameters:
+        matrix       - completed NW scoring matrix
+        seq_a        - original sequence across columns
+        seq_b        - original sequence down rows
+        match        - match score
+        mismatch     - mismatch score
+        gap          - gap penalty
+        seq_align_a  - aligned sequence a (primary)
+        seq_align_b  - aligned sequence b (primary)
+        consensus    - primary consensus sequence
+        alt_a        - alternate aligned sequence a (optional)
+        alt_b        - alternate aligned sequence b (optional)
+        alt_consensus- alternate consensus sequence (optional)
+        output_path  - base path for output; if None uses timestamp in __Reports
+
+    Returns: output_path of primary CSV
+    """
+    # Resolve output directory
+    if output_path is None:
+        reports_dir = Path(__file__).parents[2] / "__Reports"
+        reports_dir.mkdir(exist_ok=True)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        primary_path = str(reports_dir / f"{timestamp}.csv")
+        alt_path     = str(reports_dir / f"{timestamp}_alt.csv")
+    else:
+        base = Path(output_path).stem
+        parent = Path(output_path).parent
+        primary_path = str(parent / f"{base}.csv")
+        alt_path = str(parent / f"{base}_alt.csv")
+
+    def _write(path, aligned_a, aligned_b, cons):
+        with open(path, "w", newline="") as f:
+            writer = csv.writer(f)
+
+            # Section 1: Scoring Parameters
+            writer.writerow(["## Scoring Parameters"])
+            writer.writerow(["Match", "Mismatch", "Gap Penalty"])
+            writer.writerow([match, mismatch, gap])
+            writer.writerow([])
+
+            # Section 2: Input Sequences
+            writer.writerow(["## Input Sequences"])
+            writer.writerow(["Sequence A (columns)", seq_a])
+            writer.writerow(["Sequence B (rows)", seq_b])
+            writer.writerow([])
+
+            # Section 3: Alignment Results
+            writer.writerow(["## Alignment"])
+            writer.writerow(["Aligned A", "".join(aligned_a)])
+            writer.writerow(["Aligned B", "".join(aligned_b)])
+            writer.writerow(["Consensus", "".join(cons)])
+            writer.writerow(["Alignment Score", int(matrix[-1, -1])])
+            writer.writerow([])
+
+            # Section 4: Full Scoring Matrix
+            writer.writerow(["## Scoring Matrix"])
+            writer.writerow([""] + [" "] + list(seq_a))
+            for i in range(matrix.shape[0]):
+                row_label = " " if i == 0 else seq_b[i - 1]
+                writer.writerow([row_label] + list(matrix[i]))
+
+        sys.stdout.write(f"CSV saved to: {path}\n")
+
+    # Always write the primary alignment
+    _write(primary_path, seq_align_a, seq_align_b, consensus)
+
+    # Write alt. only if it exists
+    if alt_a and alt_b and alt_consensus:
+        _write(alt_path, alt_a, alt_b, alt_consensus)
+
+    return primary_path
 
 
 def report(

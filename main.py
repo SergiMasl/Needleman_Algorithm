@@ -23,7 +23,7 @@ from pathlib import Path
 from modules.input_lib.input import input_sequences
 from modules.parsing_lib.parsing import parsing
 from modules.scrolling_output_lib.scrolling_output import GridBuild
-from modules.report_lib.report import report, default_report_name
+from modules.report_lib.report import report, default_report_name, write_csv
 
 
 # Updated by: Mehrnoush Fereydouni
@@ -183,6 +183,22 @@ class CreateAlignment:
 			gap_penalty,
 			tie_point=tie_point,
 			output_path=output_path,
+		)
+		# Generate .csv file
+		write_csv(
+		    matrix,
+		    seq_a,
+		    seq_b,
+		    match_score,
+		    mismatch_score,
+		    gap_penalty,
+		    seq_align_a,
+		    seq_align_b,
+		    consensus,
+		    alt_a=alt_a,
+		    alt_b=alt_b,
+		    alt_consensus=alt_consensus,
+		    output_path=output_path,
 		)
 
 # Guard Function
