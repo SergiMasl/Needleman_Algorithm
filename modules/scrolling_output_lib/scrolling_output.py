@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# -*- coding: utf-8 -*-
+
 #escott60@charlotte.edu
 #Em Scott
 
@@ -8,23 +10,31 @@ from typing import List, Tuple, Optional
 from collections import deque
 from numba import njit
 
+@njit
+def _build_matrix(rows: int, cols: int, gap: int) -> np.ndarray:
+	"""
+	Purpose: Initialize a matrix with numba's njit for faster compilation.
+	Parameters: 
+	-rows
+	-columns
+	-Gap penalty score 
+		
+	Returns: Returns the NumPy array, consisting of the sequence dimensions. 
+	"""
+	matrix = np.zeros((rows, cols), dtype=np.int32)
+	#The leftmost column is used for initializing all rows
+	matrix[:, 0] = np.arange(rows) * gap
+	#The top row is reserved for initializing all columns
+	matrix[0, :] = np.arange(cols) * gap
+	return matrix
+
 
 class GridBuild():
-	@njit
-	def _build_matrix(rows: int, cols: int, gap: int) -> np.ndarray:
-		matrix = np.zeros((rows, cols), dtype=np.int32)
-		#The leftmost column is used for initializing all rows
-		matrix[:, 0] = np.arange(rows) * gap
-		#The top row is reserved for initializing all columns
-		matrix[0, :] = np.arange(cols) * gap
-		return matrix
 
-
-	def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: #set up the matrix with NumPy
+	def matrix_build(seq_a: str, seq_b: str, gap: int) -> np.ndarray: 
 		"""
 		Purpose: Initialize a matrix with the sequences by utilizing NumPy, getting it ready for output.
-		This function serves as the matrix set up, and creates what can be best described as a scoring
-		algorithm with the gap penalty score. 
+		This function serves as the matrix set up with the input Sequence A and Sequence B
 
 		Parameters: 
 		-Sequence a,
@@ -98,8 +108,8 @@ class GridBuild():
 		seq_align_a = deque()
 		seq_align_b = deque()
 
-		#i for rows
-		#j for columns
+		#i for rows (sequence B)
+		#j for columns (sequence A)
 
 		#In the case that Sequence A (i) has no more nucleotides remaining
 		while i > 0 or j > 0:
@@ -290,13 +300,20 @@ class GridBuild():
 			alt_b.appendleft(seq_b[i - 1])
 			i -= 1
 		elif current == score_di and current == score_left:
+			#Tie between diag and left, take left
 			alt_a.appendleft(seq_a[j - 1])
 			alt_b.appendleft("-")
 			j -= 1
+		elif current == score_up and current == score_left:
+			#Tie between left and up, go up
+			alt_a.appendleft("-")
+			alt_b.appendleft(seq_b[i - 1])
+			i -= 1
 		else:
-			alt_a.appendleft(seq_a[j - 1])
-			alt_b.appendleft("-")
-			j -= 1
+			# All three tied, go up
+			alt_a.appendleft("-")
+			alt_b.appendleft(seq_b[i - 1])
+			i -= 1
 
 		while i > 0 or j > 0:
 			if i == 0:

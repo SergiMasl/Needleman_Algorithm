@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# -*- coding: utf-8 -*-
+
 from typing import Optional, Tuple
 import numpy as np
 from modules.parsing_lib.get_scoring_parameters import get_scoring_parameters
