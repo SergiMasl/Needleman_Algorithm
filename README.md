@@ -34,7 +34,7 @@ GitHub: agleite19
 
 # General Information: Needleman Wunsch Algorithm Tool
 
-The Needleman-Wunsch Algorithm Tool is a start-to-finish Python implementation of the Needleman-Wunsch global alignment algorithm for pairwise alignment of two DNA sequences. It accepts input as either raw inline sequences or standard FASTA files, constructs a complete scoring matrix using user-defined match, mismatch, and gap parameters, and performs a full traceback to determine the most optimal alignment pathway. A consensus sequence is derived from the two aligned sequences and reported directly to the terminal via scrolling output. A formatted .pdf report containing the scoring matrix and sequence statistics is automatically generated and saved to `__Reports/` upon program completion.
+The Needleman-Wunsch Algorithm Tool is a start-to-finish Python implementation of the Needleman-Wunsch global alignment algorithm for pairwise alignment of two DNA sequences. It accepts input as either raw inline sequences or standard FASTA files, constructs a complete scoring matrix using default or user-defined match, mismatch, and gap parameters, and performs a full traceback to determine the most optimal alignment pathway. A consensus sequence is derived from the two aligned sequences and reported directly to the terminal via scrolling output. A formatted .csv report and a .pdf report containing the scoring matrix and sequence statistics is automatically generated and saved to `__Reports/` upon program completion.
 
 Executing the program is straightforward: clone the repository, create and activate the provided Conda environment `(needleman_algorithm)`, and run python `main.py` from the project root. A bash script `(run_alignment.sh)` is also provided for streamlined execution with predefined input sequences and scoring parameters.
 
@@ -54,7 +54,7 @@ Executing the program is straightforward: clone the repository, create and activ
 
 `scrolling_output.py`: Fills in the table-like array, using the scoring parameters either provided by default or given by the user. Performs the traceback to find the optimal sequence alignment, using the highest values during each traceback step. Located in the `scrolling_output_lib` folder with an `__init__` file for modularization.
 
-`report.py`: Prints out the filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the `report_lib` folder with an `__init__` file for modularization.
+`report.py`: Prints out a .csv and a filled table-like array as a .pdf for user visualization of the algorithm process and alignment. Also calculates the program’s running time. Located in the `report_lib` folder with an `__init__` file for modularization.
 
 ------------------------------------------------------------------------------------------------------------------------------------------
 # Input Options
@@ -66,8 +66,8 @@ The tool accepts two DNA sequences via one of two modes, selected interactively 
 Type sequences directly into the terminal when prompted. Sequences must contain only `A`, `C`, `G`, and `T` — lowercase is accepted and automatically converted to uppercase. Whitespace is stripped automatically.
 
 ```
-Enter first DNA sequence:  AGATCATCTA
-Enter second DNA sequence: AGATCATCTG
+Enter first DNA sequence (A, T, C, and G only):  AGATCATCTA
+Enter second DNA sequence (A, T, C, and G only): AGATCATCTG
 ```
 
 **FASTA file**
@@ -81,13 +81,17 @@ AGATCATCTA
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Output Files
 
-**PDF Report** (`__Reports/<filename>.pdf`)
+**Reports** (`__Reports/<filename>.csv`, `__Reports/<filename>.pdf`)
 
-Generated automatically after every run and saved to the `__Reports/` folder in the project root. The report contains two pages: a scoring matrix table with match/mismatch/gap parameters labeled, and a sequence statistics page showing length and GC content for both sequences. The default filename is a timestamp (`YYYY-MM-DD_HH-MM-SS.pdf`). A custom name can be passed with `--outputpdf`.
+A .csv file and a .pdf file are generated automatically after every run and saved to the `__Reports/` folder in the project root. 
+
+The .csv file contains a report of the scoring parameters, input sequences, alignment with the consensus sequence and alignment score, and the scoring matrix.   
+
+The .pdf report contains two pages: a scoring matrix table with match/mismatch/gap parameters labeled, and a sequence statistics page showing length and GC content for both sequences. The default filename is a timestamp (`YYYY-MM-DD_HH-MM-SS.pdf`). A custom name can be passed with `--outputpdf`.
 
 **Terminal Output**
 
-The scoring matrix and traceback alignment are printed to the terminal during the run via `scrolling_output.py`. No separate file is written for this — it is display only.
+The terminal output includes the aligned sequences (`Aligned A` and `Aligned B`) along with the consensus sequence of the alignment. It also prints the filepath of the `.csv` and the `.pdf`. 
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------
@@ -218,6 +222,8 @@ GeeksforGeeks. (2025, February 6). Deque vs List in Python. GeeksforGeeks. https
 
 Python Optional Argument. (2026). Mimo.org. https://mimo.org/glossary/python/optional-arguments
 
+Dillinger. (n.d.). Dillinger - Online Markdown Editor [Software]. https://dillinger.io/
+
 
 ## AI Citation and Prompts: 
 
@@ -236,3 +242,7 @@ Anthropic. (2025). Claude. Claude.ai. https://claude.ai/
 -Do I need to call @staticmethod after adding Numba and calling @njit outside of my class script? 
 
 -Format and explain corrections for the report docstrings:
+
+-How to properly write a bash script to test a Python project
+
+-How to properly format a README.md file to have a cleaner, more professional look
